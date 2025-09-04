@@ -1,8 +1,5 @@
 # Grupo-4---Desarrollo-de-Software---S32
 
-
-Test commit
-
 Descripción del proyecto
 
 Este proyecto está pensado para acompañar el trabajo diario de un odontólogo, ofreciendo una herramienta digital que facilita el seguimiento de pacientes y la gestión de sus tratamientos.
