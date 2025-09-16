@@ -1,15 +1,69 @@
-# Grupo-4---Desarrollo-de-Software---S32
+# React + TypeScript + Vite
 
-Descripción del proyecto
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Este proyecto está pensado para acompañar el trabajo diario de un odontólogo, ofreciendo una herramienta digital que facilita el seguimiento de pacientes y la gestión de sus tratamientos.
+Currently, two official plugins are available:
 
-Entre sus principales funcionalidades se encuentran:
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-- Seguimiento visual de la evolución: permite subir fotos mensuales del progreso de los dientes de cada paciente, ordenarlas en una línea de tiempo y generar un video con todas las imágenes para mostrar claramente la evolución del tratamiento.
+## Expanding the ESLint configuration
 
-- Gestión de pacientes (ABML): brinda la posibilidad de registrar, modificar, eliminar y listar pacientes, asociándoles tratamientos de manera sencilla.
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-- Control económico: incluye un registro de pagos y conceptos relacionados con cada tratamiento (consultas, reposiciones, blanqueados, etc.), con cálculo automático de lo abonado, lo pendiente y la generación de un historial de pagos. Además, se pueden enviar recordatorios al paciente en caso de tener saldos pendientes.
+```js
+export default tseslint.config([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-El objetivo es ofrecer una aplicación completa que ayude a los profesionales a mantener la información clínica y administrativa de sus pacientes organizada, clara y accesible en todo momento.
+      // Remove tseslint.configs.recommended and replace with this
+      ...tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      ...tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      ...tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default tseslint.config([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
