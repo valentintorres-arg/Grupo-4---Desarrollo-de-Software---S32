@@ -1,0 +1,11 @@
+{
+  "nombre": "Juan Pérez",
+  "edad": 35,
+  "id": 101,
+  "estado": "Activo",
+  "inicio": "2025-09-01",
+  "duracion": "6 meses",
+  "progreso": 45,
+  "cita": "2025-09-20 10:00 AM",
+  "diagnostico": "Ortodoncia"
+}

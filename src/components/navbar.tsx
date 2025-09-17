@@ -13,9 +13,9 @@ export default function Navbar() {
         </div>
 
         <ul className="hidden md:flex space-x-8 font-medium text-lg">
-          <li><a href="#inicio" className="hover:text-blue-400 transition text-black">Inicio</a></li>
-          <li><a href="#pacientes" className="hover:text-blue-400 transition text-black">Pacientes</a></li>
-          <li><a href="#seguimientos" className="hover:text-blue-400 transition text-black">Seguimientos</a></li>
+          <li><a href="/" className="hover:text-blue-400 transition text-black">Inicio</a></li>
+          <li><a href="/pacientes" className="hover:text-blue-400 transition text-black">Pacientes</a></li>
+          <li><a href="/seguimientos" className="hover:text-blue-400 transition text-black">Seguimientos</a></li>
         </ul>
 
     <div className="flex items-center space-x-3 ">
