@@ -62,3 +62,6 @@ class Insumo(models.Model):
     
     def __str__(self):
         return f"{self.idInsumo} {self.nombre} {self.descripcion} {self.precioUnitario}"
+    
+class Odontologo(models.Models):
+    
