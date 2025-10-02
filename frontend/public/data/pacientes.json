@@ -1,0 +1,109 @@
+[
+  {
+    "id": 1,
+    "nombre": "Juan",
+    "apellido": "Perez",
+    "email": "juanperez@mail.com",
+    "tratamientos": [
+      {
+        "id": 101,
+        "nombre": "Ortodoncia Completa",
+        "consultas": [
+          {
+            "id": 1,
+            "fecha": "2025-01-10",
+            "lugar": "Clínica Centro",
+            "descripcion": "Colocación brackets + alineadores",
+            "monto": 150,
+            "detalle": "Consulta $100, brackets $50",
+            "imagen": "/imagenes/imagen1.png"
+          },
+          {
+            "id": 2,
+            "fecha": "2025-02-10",
+            "lugar": "Clínica Centro",
+            "descripcion": "Ajuste mensual",
+            "monto": 80,
+            "detalle": "Consulta $80",
+            "imagen": "/imagenes/imagen2.png"
+          },
+          {
+            "id": 3,
+            "fecha": "2025-03-10",
+            "lugar": "Clínica Centro",
+            "descripcion": "Reposdición bracket roto",
+            "monto": 120,
+            "detalle": "Consulta $100, bracket $20",
+            "imagen": "/imagenes/imagen3.png"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "nombre": "shrek",
+    "apellido": "Gomez",
+    "email": "elshrekgomez@gmail.com",
+    "tratamientos": [
+      {
+        "id": 102,
+        "nombre": "Ortodoncia Parcial",
+        "consultas": [
+          {
+            "id": 1,
+            "fecha": "2025-01-15",
+            "lugar": "Clínica Norte",
+            "descripcion": "Colocación brackets superiores",
+            "monto": 100,
+            "detalle": "Consulta $50, brackets $50",
+            "imagen": "/imagenes/imagenshrek.png"
+          },
+                    {
+            "id": 2,
+            "fecha": "2025-01-15",
+            "lugar": "Clínica Norte",
+            "descripcion": "Colocación brackets superiores",
+            "monto": 100,
+            "detalle": "Consulta $50, brackets $50",
+            "imagen": "/imagenes/shrek2.png"
+          }
+        ]
+      }
+      
+    ]
+  },
+    {
+    "id": 3,
+    "nombre": "Jared",
+    "apellido": "Leto",
+    "email": "jaredleto@gmail.com",
+    "tratamientos": [
+      {
+        "id": 102,
+        "nombre": "Ortodoncia Parcial",
+        "consultas": [
+          {
+            "id": 1,
+            "fecha": "2025-01-15",
+            "lugar": "Clínica Norte",
+            "descripcion": "Colocación brackets superiores",
+            "monto": 100,
+            "detalle": "Consulta $50, brackets $50",
+            "imagen": "/imagenes/jaredleto.jpg"
+          },
+                    {
+            "id": 2,
+            "fecha": "2025-01-15",
+            "lugar": "Clínica Norte",
+            "descripcion": "Colocación brackets superiores",
+            "monto": 100,
+            "detalle": "Consulta $50, brackets $50",
+            "imagen": "/imagenes/jaredleto.jpg"
+          }
+        ]
+      }
+      
+    ]
+  }
+]
