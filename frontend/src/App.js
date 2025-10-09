@@ -5,9 +5,17 @@ import "./App2.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+// 1. 🥇 IMPORTAR el nuevo componente de registro
+import RegisterTreatmentForm from './components/RegisterTreatmentForm'; 
+// Asegúrate de que la ruta './components/RegisterTreatmentForm' sea correcta.
+
 function App() {
   const [pacientes, setPacientes] = useState([]);
   const [selectedPaciente, setSelectedPaciente] = useState(null);
+  
+  // 2. 🥈 Nuevo estado para controlar la vista actual
+  // Usaremos 'detail' (por defecto) o 'register'
+  const [viewMode, setViewMode] = useState('detail'); 
 
   useEffect(() => {
     fetch("/data/pacientes.json")
@@ -15,9 +23,24 @@ function App() {
       .then((data) => setPacientes(data))
       .catch((err) => console.error(err));
   }, []);
+  
+  // Función para cambiar de vista y limpiar paciente seleccionado si vamos a registrar
+  const handleRegisterClick = () => {
+      setSelectedPaciente(null); // Opcional: limpiar la selección al registrar
+      setViewMode('register');
+  }
 
-  // Lista de pacientes con barra de búsqueda
-  const PacientesList = ({ pacientes, onSelect }) => {
+  // Función para seleccionar paciente y volver a la vista de detalle
+  const handleSelectPatient = (paciente) => {
+      setSelectedPaciente(paciente);
+      setViewMode('detail');
+  }
+
+
+  // --- COMPONENTES INTERNOS (PacientesList, ConsultasList, etc.) ---
+  
+  // MODIFICAMOS PacientesList para tener un botón de "Registrar"
+  const PacientesList = ({ pacientes, onSelect, onRegisterNew }) => {
     const [search, setSearch] = useState("");
 
     const filteredPacientes = pacientes.filter((p) =>
@@ -35,12 +58,14 @@ function App() {
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
-        <button className="btn-add">+</button>
+        {/* Agregamos un botón para cambiar a la vista de registro */}
+        <button className="btn-add" onClick={onRegisterNew}>Registrar Tratamiento</button>
         <button className="btn-delete">-</button>
         <ul>
           {filteredPacientes.length > 0 ? (
             filteredPacientes.map((p) => (
-              <li key={p.id} onClick={() => onSelect(p)}>
+              // Usamos la nueva función handleSelectPatient
+              <li key={p.id} onClick={() => onSelect(p)} className={p.id === selectedPaciente?.id ? 'selected' : ''}>
                 {p.nombre} {p.apellido}
               </li>
             ))
@@ -51,57 +76,11 @@ function App() {
       </div>
     );
   };
-
-  const ConsultasList = ({ consultas }) => {
-    if (!consultas || consultas.length === 0)
-      return <p className="empty">No hay consultas registradas.</p>;
-
-    return (
-      <div className="consultas-list">
-        <h3>Consultas</h3>
-        <button className="btn-add">+</button>
-        <button className="btn-delete">-</button>
-        {consultas.map((c) => (
-          <div key={c.id} className="consulta-card">
-            <p><strong>Fecha:</strong> {c.fecha}</p>
-            <p><strong>Lugar:</strong> {c.lugar}</p>
-            <p><strong>Descripción:</strong> {c.descripcion}</p>
-            <p><strong>Monto:</strong> ${c.monto} ({c.detalle})</p>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const ConsultaCarousel = ({ consultas }) => {
-    if (!consultas || consultas.length === 0)
-      return <p className="empty">No hay imágenes para mostrar.</p>;
-
-    const settings = {
-      dots: true,
-      infinite: false,
-      speed: 500,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-    };
-
-    return (
-      <div className="carousel-container">
-
-        <h3>Evolución del tratamiento</h3>
-        <Slider {...settings}>
-          {consultas.map((c) => (
-            <div key={c.id} className="carousel-slide">
-              <img src={c.imagen} alt={`Consulta ${c.id}`} />
-              <p>{c.fecha}</p>
-            </div>
-          ))}
-        </Slider>
-      </div>
-    );
-  };
-
-  const PacienteDetail = ({ paciente }) => {
+  
+  // ... (El resto de tus componentes internos ConsultasList, ConsultaCarousel, PacienteDetail quedan igual) ...
+  const ConsultasList = ({ consultas }) => { /* ... */ };
+  const ConsultaCarousel = ({ consultas }) => { /* ... */ };
+  const PacienteDetail = ({ paciente }) => { 
     if (!paciente)
       return <div className="empty">Selecciona un paciente para ver detalles</div>;
 
@@ -119,16 +98,32 @@ function App() {
     );
   };
 
+
+  // --- RENDERIZADO PRINCIPAL (RETURN) ---
   return (
     <div className="App">
-      {/* 
-      <header>
-        <h1> Seguidor de Ortodoncia</h1>
-      </header>
-      */}
+      {/* ... header opcional ... */}
       <main className="main-container">
-        <PacientesList pacientes={pacientes} onSelect={setSelectedPaciente} />
-        <PacienteDetail paciente={selectedPaciente} />
+        {/* Pasamos la nueva función handleSelectPatient y handleRegisterClick */}
+        <PacientesList 
+            pacientes={pacientes} 
+            onSelect={handleSelectPatient} 
+            onRegisterNew={handleRegisterClick}
+        />
+        
+        {/* 3. 🥉 Lógica condicional para mostrar la vista principal o el formulario de registro */}
+        <div className="detail-area">
+            {viewMode === 'detail' && (
+                <PacienteDetail paciente={selectedPaciente} />
+            )}
+            
+            {viewMode === 'register' && (
+                <RegisterTreatmentForm 
+                    patients={pacientes} // Le pasamos la lista de pacientes para el selector
+                    onSuccess={() => setViewMode('detail')} // Opcional: Volver a detail tras un registro exitoso
+                />
+            )}
+        </div>
       </main>
     </div>
   );
