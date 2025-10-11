@@ -1,31 +1,34 @@
-import React from 'react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const Navbar = ({ onViewChange, currentView }) => {
+export default function Navbar() {
+  const navigate = useNavigate();
+
   return (
-    <nav style={styles.navBar}>
-      <h1 style={styles.logo}>OdontoSys 🦷</h1>
-      <div style={styles.buttonGroup}>
-        
-        {/* 1. Opción HOME */}
-        <button 
-          onClick={() => onViewChange('home')}
-          style={currentView === 'home' ? styles.activeButton : styles.navButton}
+    <nav className="bg-blue-600 text-white p-4 flex justify-between items-center shadow">
+      <h1 className="text-2xl font-bold">OdontoSys 🦷</h1>
+      <div className="flex gap-4">
+        <button
+          className="px-3 py-2 rounded hover:bg-blue-700 transition"
+          onClick={() => navigate("/")}
         >
           Home
         </button>
-        
-        {/* Opción PACIENTES */}
-        <button 
-          onClick={() => onViewChange('detail')}
-          style={currentView === 'detail' ? styles.activeButton : styles.navButton}
+        <button
+          className="px-3 py-2 rounded hover:bg-blue-700 transition"
+          onClick={() => navigate("/patients")}
         >
           Pacientes
         </button>
-        
-        {/* Opción REGISTRAR TRATAMIENTO */}
-        <button 
-          onClick={() => onViewChange('register')}
-          style={currentView === 'register' ? styles.activeButton : styles.navButton}
+        <button
+          className="px-3 py-2 rounded hover:bg-blue-700 transition"
+          onClick={() => navigate("/patients/new")}
+        >
+          Nuevo Paciente
+        </button>
+        <button
+          className="px-3 py-2 rounded hover:bg-blue-700 transition"
+          onClick={() => navigate("/register")}
         >
           Registrar Tratamiento
         </button>
@@ -33,47 +36,4 @@ const Navbar = ({ onViewChange, currentView }) => {
       </div>
     </nav>
   );
-};
-
-// Estilos básicos para la Navbar
-const styles = {
-  navBar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 30px',
-    backgroundColor: '#007bff', 
-    color: 'white',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-  },
-  logo: {
-    margin: 0,
-    fontSize: '24px',
-  },
-  buttonGroup: {
-    display: 'flex',
-    gap: '15px',
-  },
-  navButton: {
-    padding: '10px 15px',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    backgroundColor: 'transparent',
-    color: 'white',
-    fontSize: '16px',
-    transition: 'background-color 0.3s',
-  },
-  activeButton: {
-    padding: '10px 15px',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    color: 'white',
-    fontSize: '16px',
-    fontWeight: 'bold',
-  }
-};
-
-export default Navbar;
+}
