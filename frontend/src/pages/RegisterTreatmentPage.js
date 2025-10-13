@@ -1,28 +1,49 @@
 import { useState } from "react";
+import FormularioTratamiento from "../components/tratamiento/FormTratamiento";
+import VistaPreviaTratamiento from "../components/tratamiento/VIstaPreviaTratamiento";
 
-export default function RegisterTreatmentPage() {
-  const [form, setForm] = useState({
-    patientId: "",
-    startDate: "",
-    description: "",
+export default function RegistrarTratamientoPage() {
+  const [formulario, setFormulario] = useState({
+    pacienteId: "",
+    fechaInicio: "",
+    descripcion: "",
   });
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-  const handleSubmit = (e) => {
+  const manejarCambio = (e) =>
+    setFormulario({ ...formulario, [e.target.name]: e.target.value });
+
+  const manejarEnvio = (e) => {
     e.preventDefault();
-    alert("Tratamiento registrado: " + JSON.stringify(form));
-    setForm({ patientId: "", startDate: "", description: "" });
+    alert("Tratamiento registrado: " + JSON.stringify(formulario));
+    setFormulario({ pacienteId: "", fechaInicio: "", descripcion: "" });
+  };
+
+  const styles = {
+    container: "container mx-auto px-4 py-8",
+    headerTitle: "text-2xl font-bold text-gray-900 mb-2",
+    headerSubtitle: "text-gray-600 mb-6",
+    layout: "flex flex-col md:flex-row gap-8",
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-4">Registrar Tratamiento</h2>
-      <form className="bg-white shadow p-6 rounded-lg space-y-4" onSubmit={handleSubmit}>
-        <input type="text" name="patientId" placeholder="ID del Paciente" value={form.patientId} onChange={handleChange} className="w-full border px-3 py-2 rounded" required />
-        <input type="date" name="startDate" value={form.startDate} onChange={handleChange} className="w-full border px-3 py-2 rounded" required />
-        <textarea name="description" placeholder="Descripción del Tratamiento" value={form.description} onChange={handleChange} className="w-full border px-3 py-2 rounded" required />
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Registrar</button>
-      </form>
+    <div className={styles.container}>
+      {/* Encabezado integrado en el page */}
+      <header>
+        <h2 className={styles.headerTitle}>Registrar Tratamiento</h2>
+        <p className={styles.headerSubtitle}>
+          Completá los datos del tratamiento para vincularlo a un paciente.
+        </p>
+      </header>
+
+      <div className={styles.layout}>
+        {/* Componentes funcionales separados */}
+        <FormularioTratamiento
+          formulario={formulario}
+          onChange={manejarCambio}
+          onSubmit={manejarEnvio}
+        />
+        <VistaPreviaTratamiento formulario={formulario} />
+      </div>
     </div>
   );
 }
