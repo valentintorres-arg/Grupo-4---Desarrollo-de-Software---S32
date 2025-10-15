@@ -115,6 +115,14 @@ export default function Navbar() {
           style={styles.btn}
           onMouseEnter={(e) => handleHover(e, true)}
           onMouseLeave={(e) => handleHover(e, false)}
+          onClick={() => navigate("/appointments")}
+        >
+          Turnos
+        </button>
+        <button
+          style={styles.btn}
+          onMouseEnter={(e) => handleHover(e, true)}
+          onMouseLeave={(e) => handleHover(e, false)}
           onClick={() => navigate("/patients/new")}
         >
           Nuevo Paciente
