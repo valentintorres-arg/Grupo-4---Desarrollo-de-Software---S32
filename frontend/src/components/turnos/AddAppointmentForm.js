@@ -33,9 +33,10 @@ const AddAppointmentForm = ({ defaultDate, onAdd, onClose }) => {
       duration,
       reason,
     }
-
-    onAdd(nuevoTurno)
-    onClose()
+    const success = onAdd(nuevoTurno); 
+    if (success) {
+      onClose();
+    }
   }
 
   const styles = {

@@ -10,6 +10,16 @@ const mockAppointments = [
   { id: 3, date: '2025-10-22', time: '14:00', patient: 'Marta López', reason: 'Limpieza dental', duration: '60 min' },
 ]
 
+const parseDurationToMinutes = (duration) => {
+  if (duration.includes('hora')) {
+    const hours = parseInt(duration.split(' ')[0]) || 1;
+    return hours * 60;
+  }
+  const minutes = parseInt(duration.split(' ')[0]);
+  return isNaN(minutes) ? 30 : minutes;
+};
+
+
 export const AppointmentsPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [appointments, setAppointments] = useState(mockAppointments)
@@ -24,10 +34,37 @@ export const AppointmentsPage = () => {
     ? appointments.filter(app => app.date === formatDate(selectedDate)).sort((a, b) => a.time.localeCompare(b.time))
     : appointments.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
 
-  const handleAddAppointment = (newApp) => {
-    if (!newApp.id) newApp.id = Date.now() // asegurar id único
-    setAppointments(prev => [...prev, newApp])
+const handleAddAppointment = (newApp) => {
+
+  const newStartTime = new Date(`${newApp.date}T${newApp.time}`);
+  const newDuration = parseDurationToMinutes(newApp.duration);
+  const newEndTime = new Date(newStartTime.getTime() + newDuration * 60000);
+
+
+  const appointmentsOnSameDay = appointments.filter(app => app.date === newApp.date);
+
+
+  for (const existingApp of appointmentsOnSameDay) {
+    const existingStartTime = new Date(`${existingApp.date}T${existingApp.time}`);
+    const existingDuration = parseDurationToMinutes(existingApp.duration);
+    const existingEndTime = new Date(existingStartTime.getTime() + existingDuration * 60000);
+    const endHours = existingEndTime.getHours().toString().padStart(2, '0');
+    const endMinutes = existingEndTime.getMinutes().toString().padStart(2, '0');
+    const formattedEndTime = `${endHours}:${endMinutes}`;
+    const isOverlapping = (newStartTime < existingEndTime) && (newEndTime > existingStartTime);
+
+    if (isOverlapping) {
+
+      alert(
+        `Error: El horario se pisa con el turno de ${existingApp.patient} de ${existingApp.time} a ${formattedEndTime}.`
+      );
+      return false; 
+    }
   }
+  if (!newApp.id) newApp.id = Date.now();
+  setAppointments(prev => [...prev, newApp]);
+  return true; 
+}
 
   // 🔹 BORRAR TURNO
   const handleDeleteAppointment = (id) => {
