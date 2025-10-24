@@ -11,7 +11,7 @@ export default function FormTratamiento({ formulario, onChange, onSubmit }) {
       <input
         type="text"
         name="pacienteId"
-        placeholder="ID del Paciente"
+        placeholder="DNI del Paciente"
         value={formulario.pacienteId}
         onChange={onChange}
         className={styles.input}

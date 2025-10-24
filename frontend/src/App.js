@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
-import PatientsPage from "./pages/PatientsPage"
+// import PatientsPage from "./pages/PatientsPage"
 import PatientDetailPage from "./pages/PatientsPage"
 import RegisterTreatmentPage from "./pages/RegisterTreatmentPage";
 import NewPatientPage from "./pages/NewPatientsPage";
 import LoginPage from "./pages/LoginPage";
 import PatientsList from "./pages/PatientsList";
 import AppointmentsPage from "./pages/AppointmentsPage";
+import Antecedentes from "./components/componentspacieantes/Antecedentes";
 
 import { PatientsProvider } from "./contexts/patients-context";
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/register" element={<RegisterTreatmentPage />} />
           <Route path="/login" element={<LoginPage/>} />
           <Route path="/appointments" element={<AppointmentsPage />} />
+          <Route path="/antecedentes" element={<Antecedentes />} />
         </Routes>
       </Router>
     </PatientsProvider>
