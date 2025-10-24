@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { usePatients } from "../contexts/patients-context";
 import { useNavigate } from "react-router-dom";
+import { PatientsProvider } from "../contexts/patients-context";
 
 export default function NuevoPacientePage() {
   const { addPatient } = usePatients();
