@@ -17,19 +17,27 @@ export default function RegistrarTratamientoPage() {
     alert("Tratamiento registrado: " + JSON.stringify(formulario));
     setFormulario({ pacienteId: "", fechaInicio: "", descripcion: "" });
   };
-
+  
   const styles = {
-    container: "container mx-auto px-4 py-8",
-    headerTitle: "text-2xl font-bold text-gray-900 mb-2",
+    container: "container mx-auto px-4 pt-24 pb-8", 
     headerSubtitle: "text-gray-600 mb-6",
     layout: "flex flex-col md:flex-row gap-8",
+
+  
+    headerTitle: {
+      fontSize: "2rem",
+      fontWeight: 700,
+      marginBottom: "20px",
+    },
   };
 
   return (
     <div className={styles.container}>
-      {/* Encabezado integrado en el page */}
       <header>
-        <h2 className={styles.headerTitle}>Registrar Tratamiento</h2>
+        
+   
+        <h2 style={styles.headerTitle}>Registrar Tratamiento</h2>
+        
         <p className={styles.headerSubtitle}>
           Completá los datos del tratamiento para vincularlo a un paciente.
         </p>

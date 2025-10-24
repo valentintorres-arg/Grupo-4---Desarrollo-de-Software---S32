@@ -37,8 +37,17 @@ export const AppointmentsPage = () => {
   }
 
   const styles = {
-    appointmentsContainer: { padding: '2rem', backgroundColor: '#f7fafc', minHeight: '100vh', boxSizing: 'border-box' },
-    headerTitle: { fontSize: '2em', color: '#2d3748', marginBottom: '1.5rem', textAlign: 'center' },
+appointmentsContainer: { 
+  paddingTop: '6rem', // (Equivalente al pt-24 de Tailwind)
+  paddingBottom: '2rem', 
+  paddingLeft: '2rem', 
+  paddingRight: '2rem', 
+  backgroundColor: '#f7fafc', 
+  minHeight: '100vh', 
+  boxSizing: 'border-box' ,
+  
+  
+},    headerTitle: { fontSize: '2em', marginBottom: '1.5rem', textAlign: 'center', fontWeight: 700, },
     contentLayout: { display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'flex-start' },
     calendarWrapper: { flex: '1', minWidth: '350px', maxWidth: '450px' },
     dailyAppointmentsWrapper: { flex: '1', backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', minWidth: '350px', maxWidth: '450px' },

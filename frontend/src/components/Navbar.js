@@ -119,14 +119,7 @@ export default function Navbar() {
         >
           Turnos
         </button>
-        <button
-          style={styles.btn}
-          onMouseEnter={(e) => handleHover(e, true)}
-          onMouseLeave={(e) => handleHover(e, false)}
-          onClick={() => navigate("/patients/new")}
-        >
-          Nuevo Paciente
-        </button>
+       
         <button
           style={{ ...styles.btn, ...styles.btnPrimary }}
           onClick={() => navigate("/register")}
