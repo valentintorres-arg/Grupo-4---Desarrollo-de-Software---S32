@@ -33,7 +33,8 @@ export default function HomePage() {
   const navigate = useNavigate();
   const isLoggedIn = isAuthenticated();
   const userData = getUserData();
-  const [ odontologoNombre, setOdontologoNombre ] = useState('');
+  const [ odontologoInfo, setOdontologoInfo ] = useState(null);
+  const [ loading, setLoading ] = useState(false);
 
   const styles = {
     container: {
@@ -91,18 +92,29 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    if (isLoggedIn && userData.matricula) {
-      fetch(`http://localhost:8000/odontologos/`, {
+    if (isLoggedIn) {
+      setLoading(true);
+      fetch('http://localhost:8000/odontologos/perfil/', {
+        method: 'GET',
         headers: getAuthHeaders()
       })
-      .then(response => response.json())
-      .then(data => {
-        const odontologo = data.find(o => o.matricula === userData.matricula);
-        if (odontologo) {
-          setOdontologoNombre(`${odontologo.nombre} ${odontologo.apellido}`);
+      .then(response => {
+        if (response.ok) {
+          return response.json();
         }
+        throw new Error('Error al obtener perfil');
       })
-      .catch(error => console.error('Error obteniendo datos:', error));
+      .then(data => {
+        setOdontologoInfo(data);
+        console.log('Perfil Obtenido:', data);
+      })
+      .catch(error => {
+        console.error('Error obteniendo perfil:', error);
+        setOdontologoInfo({nombre_completo: `Matricula ${userData.matricula}`});
+      })
+      .finally(() => {
+        setLoading(false);
+      });
     }
   }, [isLoggedIn, userData.matricula]);
 
@@ -117,7 +129,11 @@ export default function HomePage() {
       {isLoggedIn ? (
         <>
           <p style={styles.subtitulo}>
-            ¡Hola Dr/Dra. { odontologoNombre || userData.matricula }!
+            {loading ? (
+              '¡Hola Doctor! Cargando...'
+            ) : (
+              `¡Hola Dr/Dra. ${odontologoInfo?.nombre_completo || userData.matricula}!`
+            )}
           </p>
           <p style={styles.subtituloSecundario}>
             Selecciona una opción del menú para continuar
