@@ -93,7 +93,12 @@ export default function Navbar() {
 
   return (
     <header style={styles.header}>
-      <h1 style={styles.title}>OdontoSys 🦷</h1>
+      <h1 
+        style={{...styles.title, cursor: "pointer"}} 
+        onClick={() => navigate("/")}
+      >
+        OdontoSys 🦷
+      </h1>
       <div style={styles.navButtons}>
         <button
           style={styles.btn}
