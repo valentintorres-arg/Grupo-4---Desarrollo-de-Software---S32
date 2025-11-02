@@ -26,9 +26,14 @@
 // }
 
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { isAuthenticated, getUserData, getAuthHeaders } from "../utils/auth";
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const isLoggedIn = isAuthenticated();
+  const userData = getUserData();
+  const [ odontologoNombre, setOdontologoNombre ] = useState('');
 
   const styles = {
     container: {
@@ -78,7 +83,28 @@ export default function HomePage() {
       transform: "translateY(-2px)",
       boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
     },
+    subtituloSecundario: {
+      fontSize: "1rem",
+      color: "#64748b",
+      marginBottom: "20px",
+    },
   };
+
+  useEffect(() => {
+    if (isLoggedIn && userData.matricula) {
+      fetch(`http://localhost:8000/odontologos/`, {
+        headers: getAuthHeaders()
+      })
+      .then(response => response.json())
+      .then(data => {
+        const odontologo = data.find(o => o.matricula === userData.matricula);
+        if (odontologo) {
+          setOdontologoNombre(`${odontologo.nombre} ${odontologo.apellido}`);
+        }
+      })
+      .catch(error => console.error('Error obteniendo datos:', error));
+    }
+  }, [isLoggedIn, userData.matricula]);
 
   const handleHover = (e, isHovering) => {
     Object.assign(e.target.style, isHovering ? styles.botonHover : {});
@@ -87,16 +113,30 @@ export default function HomePage() {
   return (
     <div style={styles.container}>
       <h2 style={styles.titulo}>Bienvenido a OdontoSys 🦷</h2>
-      <p style={styles.subtitulo}>Seleccione una opción del menú</p>
 
-      <button
-        style={styles.boton}
-        onMouseEnter={(e) => handleHover(e, true)}
-        onMouseLeave={(e) => handleHover(e, false)}
-        onClick={() => navigate("/login")}
-      >
-        Iniciar Sesión
-      </button>
+      {isLoggedIn ? (
+        <>
+          <p style={styles.subtitulo}>
+            ¡Hola Dr/Dra. { odontologoNombre || userData.matricula }!
+          </p>
+          <p style={styles.subtituloSecundario}>
+            Selecciona una opción del menú para continuar
+          </p>
+        </>
+      ) : (
+        <>
+          <p style={styles.subtitulo}>Seleccione una opción del menú</p>
+          <button
+            style={styles.boton}
+            onMouseEnter={(e) => handleHover(e, true)}
+            onMouseLeave={(e) => handleHover(e, false)}
+            onClick={() => navigate("/login")}
+          >
+            Iniciar Sesión
+          </button>
+        </>
+      )}
+      
     </div>
   );
 }

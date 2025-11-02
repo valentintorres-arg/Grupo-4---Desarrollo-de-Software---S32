@@ -35,9 +35,12 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { isAuthenticated, logout, getUserData } from "../utils/auth";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const isLoggedIn = isAuthenticated();
+  const userData = getUserData();
 
   const styles = {
     header: {
@@ -81,6 +84,27 @@ export default function Navbar() {
       borderColor: "transparent",
       color: "white",
     },
+    userInfo: {
+  color: "#e2e8f0",
+  fontSize: "0.9rem",
+  fontWeight: "500",
+  padding: "10px 14px",
+},
+logoutBtn: {
+  padding: "10px 14px",
+  borderRadius: "12px",
+  border: "1px solid rgba(239,68,68,.5)",
+  background: "#dc2626",
+  color: "#ffffff",
+  cursor: "pointer",
+  fontWeight: "600",
+  transition: "all 0.2s ease",
+},
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   // manejador para efectos hover sin CSS externo
@@ -99,7 +123,8 @@ export default function Navbar() {
       >
         OdontoSys 🦷
       </h1>
-      <div style={styles.navButtons}>
+      {isLoggedIn && (
+        <div style={styles.navButtons}>
         <button
           style={styles.btn}
           onMouseEnter={(e) => handleHover(e, true)}
@@ -131,7 +156,18 @@ export default function Navbar() {
         >
           Registrar Tratamiento
         </button>
+        {/* Info del usuario y logout */}
+        <span style={styles.userInfo}>
+          👨‍⚕️ {userData.matricula}
+        </span>
+        <button
+          style={styles.logoutBtn}
+          onClick={handleLogout}
+        >
+          Cerrar Sesión
+        </button>
       </div>
+      )}
     </header>
   );
 }
