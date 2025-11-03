@@ -1,0 +1,174 @@
+.odontograma {
+  display: flex;
+  flex-wrap: wrap;
+  font-family: Arial, sans-serif;
+  gap: 20px;
+  justify-content: center;
+  padding: 10px;
+  background: rgb(255, 255, 255);
+}
+
+.panel {
+  min-width: 220px;
+  border-right: 1px solid #ddd;
+  padding: 10px;
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  cursor: pointer;
+}
+
+.color {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #555;
+}
+
+.opcion.activo {
+  font-weight: bold;
+}
+
+.mapa {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.fila {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.diente {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #888;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background-color: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Zonas del diente (divididas con clip-path en forma de círculo) */
+.sector {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  border: 0.5px solid rgba(0, 0, 0, 0.3);
+}
+
+.sector:hover {
+  opacity: 0.85;
+  transform: scale(1.03);
+}
+
+/* Sectores divididos */
+.arriba {
+  clip-path: polygon(50% 50%, 0% 0%, 100% 0%);
+}
+
+.abajo {
+  clip-path: polygon(50% 50%, 100% 100%, 0% 100%);
+}
+
+.izquierda {
+  clip-path: polygon(0% 0%, 0% 100%, 50% 50%);
+}
+
+.derecha {
+  clip-path: polygon(100% 0%, 100% 100%, 50% 50%);
+}
+
+/* Centro */
+.centro {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #555;
+  position: relative;
+  z-index: 2;
+  background-color: white;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsividad */
+@media (max-width: 900px) {
+  .odontograma {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .panel {
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    width: 100%;
+  }
+
+  .fila {
+    gap: 8px;
+  }
+
+  .diente {
+    width: 50px;
+    height: 50px;
+  }
+
+  .centro {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 500px) {
+  .diente {
+    width: 45px;
+    height: 45px;
+  }
+  .centro {
+    width: 22px;
+    height: 22px;
+  }
+}
+/*parte del json*/
+.json-viewer {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 15px auto;
+  width: 90%;
+  max-width: 800px;
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+.json-viewer h3 {
+  margin-top: 0;
+  font-size: 15px;
+  color: #333;
+}
