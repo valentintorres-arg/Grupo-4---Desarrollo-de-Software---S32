@@ -1,16 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePatients } from "../hooks/usePatients";
 
 export default function PatientsListPage() {
   const navigate = useNavigate();
-
-  const patients = [
-    { id: "000001", nombre: "Jonathan", apellido: "Santurio", dni: "9797979797", email: "elño@gmail.com", telefono: "+54 221 98989898" },
-    { id: "000002", nombre: "Camila", apellido: "Martínez", dni: "40888999", email: "camila.martinez@gmail.com", telefono: "+54 11 22223333" },
-    { id: "000003", nombre: "Diego", apellido: "Gómez", dni: "36777111", email: "dgomez@gmail.com", telefono: "+54 221 44445555" },
-    { id: "000004", nombre: "Lucía", apellido: "Pérez", dni: "40999111", email: "lucia.perez@gmail.com", telefono: "+54 11 55556666" },
-  ];
-
+  const { patients, loading, error, setError } = usePatients();
   const [query, setQuery] = useState("");
 
   const filtered = patients.filter((p) => {
@@ -100,11 +94,55 @@ export default function PatientsListPage() {
       textAlign: "center",
       color: "#6b7280",
     },
+    loading: {
+      padding: "40px",
+      textAlign: "center",
+      color: "#6b7280",
+      fontSize: "16px",
+    },
+    error: {
+      padding: "20px",
+      textAlign: "center",
+      color: "#dc2626",
+      backgroundColor: "#fef2f2",
+      border: "1px solid #fca5a5",
+      borderRadius: "8px",
+      marginBottom: "20px",
+      maxWidth: "800px",
+      width: "100%",
+    },
+    retryButton: {
+      backgroundColor: "#dc2626",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      padding: "8px 16px",
+      fontSize: "14px",
+      cursor: "pointer",
+      marginTop: "10px",
+    },
   };
 
   return (
     <div style={s.page}>
       <h2 style={s.title}>Listado de Pacientes</h2>
+
+      {/* Mostar error si existe*/}
+      {error && (
+        <div style={s.error}>
+          {error}
+          <br />
+          <button
+            style={s.retryButton}
+            onClick={() => {
+              setError(null);
+              window.location.reload();
+            }}
+          >
+            Reintentar
+          </button>
+        </div>
+      )}
 
       {/* 🔎 Barra de búsqueda + botón */}
       <div style={s.searchContainer}>
@@ -114,15 +152,22 @@ export default function PatientsListPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           style={s.searchInput}
+          disabled={loading}
         />
         <button
-          style={s.addButton}
-          onMouseEnter={(e) =>
-            Object.assign(e.currentTarget.style, {
-              backgroundColor: "#1e40af",
-              transform: "scale(1.03)",
-            })
-          }
+          style={{
+            ...s.addButton,
+            opacity: loading ? 0.6 : 1,
+            cursor: loading ? "not-allowed" : "pointer",
+          }}
+          onMouseEnter={(e) => {
+            if (!loading) {
+              Object.assign(e.currentTarget.style, {
+                backgroundColor: "#1e40af",
+                transform: "scale(1.03)",
+              });
+            }
+          }}
           onMouseLeave={(e) =>
             Object.assign(e.currentTarget.style, {
               backgroundColor: "#2563eb",
@@ -130,6 +175,7 @@ export default function PatientsListPage() {
             })
           }
           onClick={() => navigate("/patients/new")}
+          disabled={loading}
         >
           ➕ Nuevo Paciente
         </button>
@@ -137,7 +183,11 @@ export default function PatientsListPage() {
 
       {/* 📋 Lista */}
       <div style={s.list}>
-        {filtered.length > 0 ? (
+        {loading ? (
+          <div style={s.loading}>
+            Cargando pacientes...
+          </div>
+        ) : filtered.length > 0 ? (
           filtered.map((p) => (
             <div
               key={p.id}
@@ -158,13 +208,18 @@ export default function PatientsListPage() {
                 </div>
                 <div style={s.info}>
                   DNI: {p.dni} • {p.email}
+                  {p.obraSocial_data && (
+                    <span> • {p.obraSocial_data.nombre}</span>
+                  )}
                 </div>
               </div>
               <div style={{ fontSize: 24 }}>🦷</div>
             </div>
           ))
         ) : (
-          <div style={s.empty}>No se encontraron pacientes.</div>
+          <div style={s.empty}>
+            {patients.length === 0 ? "No hay pacientes registrados." : "No se encontraron pacientes."}
+          </div>
         )}
       </div>
     </div>

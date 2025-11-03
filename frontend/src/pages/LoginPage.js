@@ -142,7 +142,7 @@ export default function Login() {
         const userData = getUserData();
         console.log('Usuario logueado:', userData.matricula);
       } else {
-        setError(data.detail || 'Credenciales incorrectas. Verifica tu matricula y contraseña.')
+        setError('Credenciales incorrectas. Verifica tu matrícula y contraseña.');
       }
     } catch(error) {
       setError('Error de conexión. Verifica que el servidor esté ejecutándose');
