@@ -15,10 +15,15 @@ class Paciente(models.Model):
     dni = models.IntegerField(unique=True)
     nombre = models.CharField(max_length=255)
     apellido = models.CharField(max_length=255)
-    edad = models.IntegerField()
+    fecha_nacimiento = models.DateField()
     email = models.EmailField(max_length=255)
-    numeroOS = models.CharField(max_length=50)  # Número de socio de la obra social
+    telefono = models.CharField(max_length=20, blank=True, null=True)
+    direccion = models.TextField(blank=True, null=True)
+    numeroOS = models.CharField(max_length=50)
     obraSocial = models.ForeignKey(ObraSocial, on_delete=CASCADE)
+    contacto_emergencia_nombre = models.CharField(max_length=255, blank=True, null=True)
+    contacto_emergencia_relacion = models.CharField(max_length=100, blank=True, null=True)
+    contacto_emergencia_telefono = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return f"{self.nombre} {self.apellido} ({self.dni})"

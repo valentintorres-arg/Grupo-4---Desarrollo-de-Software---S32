@@ -12,7 +12,7 @@ export default function PatientsListPage() {
     return (
       p.nombre.toLowerCase().includes(q) ||
       p.apellido.toLowerCase().includes(q) ||
-      p.dni.toLowerCase().includes(q) ||
+      p.dni.toString().includes(q) ||
       p.email.toLowerCase().includes(q)
     );
   });

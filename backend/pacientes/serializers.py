@@ -10,4 +10,8 @@ class PacienteSerializer(serializers.ModelSerializer):
     obraSocial_data = ObraSocialSerializer(source = 'obraSocial', read_only = True)
     class Meta:
         model = Paciente
-        fields = ['dni', 'nombre', 'apellido', 'edad', 'email', 'numeroOS', 'obraSocial', 'obraSocial_data']
+        fields = [
+            'id', 'dni', 'nombre', 'apellido', 'fecha_nacimiento', 
+            'email', 'telefono', 'direccion', 'numeroOS', 'obraSocial', 'obraSocial_data',
+            'contacto_emergencia_nombre', 'contacto_emergencia_relacion', 'contacto_emergencia_telefono'
+        ]
