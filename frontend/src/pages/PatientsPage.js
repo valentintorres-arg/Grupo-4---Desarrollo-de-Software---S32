@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ModalAgregarAntecedente from "../components/componentspacieantes/Modal-agregar-antecedente";
 import Tratamientos from "../components/componentspacieantes/Tratamientos";
 import Antecedentes from "../components/componentspacieantes/Antecedentes";
+import Consultas from "../components/componentspacieantes/consultas";
 
 
 
@@ -264,7 +265,7 @@ useEffect(() => {
 
       {/* Tabs */}
       <div style={s.tabsBar}>
-        {["personal", "odontograma", "antecedentes", "turnos", "tratamientos"].map((tab) => (
+        {["personal", "odontograma", "antecedentes", "turnos", "tratamientos", "consultas"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveSection(tab)}
@@ -326,7 +327,16 @@ useEffect(() => {
         {activeSection === "tratamientos" && (
           <Tratamientos />
         )}
+
+        {activeSection === "consultas" && (
+          <Consultas />
+
+
+
+        )}
       </section>
+      
+
 
       {!isEditing && (
         <button style={s.fabEdit} onClick={handleEdit}>
