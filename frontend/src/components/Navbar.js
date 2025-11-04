@@ -124,7 +124,7 @@ export default function Navbar() {
           style={{ ...styles.btn, ...styles.btnPrimary }}
           onClick={() => navigate("/register")}
         >
-          Registrar Tratamiento
+          Agregar Paciente
         </button>
       </div>
     </header>

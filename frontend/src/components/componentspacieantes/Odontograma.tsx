@@ -129,12 +129,12 @@ export default function Odontograma() {
           </div>
         ))}
       </main>
-{/*
+
       <section className="json-viewer">
         <h3>JSON PARA VER LA ACTUALIZACION</h3>
         <pre>{odontogramaJSON}</pre>
       </section>
-*/}
+
     </div>
   );
 }

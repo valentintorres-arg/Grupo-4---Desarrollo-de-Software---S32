@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 export default function Tratamientos() {
     const navigate = useNavigate();
 
-    // 🧠 Estado inicial desde localStorage o genéricos
     // const [tratamientos, setTratamientos] = useState(() => {Esta linea va cuando se usa la api, no cuando es localstorage}
 
     const [tratamientos] = useState(() => {
@@ -94,7 +93,6 @@ export default function Tratamientos() {
     return (
         <>
         <div style={s.grid}>
-            {/* 🧾 Cards de tratamientos */}
             {tratamientos.map((t) => (
             <div key={t.id} style={s.card}>
                 <h3 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t.nombre}</h3>
@@ -111,7 +109,6 @@ export default function Tratamientos() {
             </div>
             ))}
 
-            {/* ➕ Card para redirigir al registro */}
             <div
             style={s.addButton}
             onClick={() => navigate("/register")}

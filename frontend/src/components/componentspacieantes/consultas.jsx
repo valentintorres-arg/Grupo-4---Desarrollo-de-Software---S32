@@ -30,6 +30,40 @@ export function CardConsulta({ consulta }) {
     );
 }
 
+
+export function ListadoConsultas() {
+    const [consultas, setConsultas] = React.useState([]);
+    const [cargando, setCargando] = React.useState(true);
+
+    React.useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const data = await listarConsultas();
+                if (mounted) setConsultas(Array.isArray(data) ? data : []);
+            } catch (e) {
+                if (mounted) setConsultas([]);
+            } finally {
+                if (mounted) setCargando(false);
+            }
+        })();
+        return () => { mounted = false; };
+    }, []);
+
+    if (cargando) return <div>Cargando consultas...</div>;
+    if (!consultas.length) return <div>No hay consultas</div>;
+
+    return (
+        <div>
+            {consultas.map((consulta) => (
+                <CardConsulta
+                    key={consulta.id ?? `${consulta.fecha}-${consulta.motivo}`}
+                    consulta={consulta}
+                />
+            ))}
+        </div>
+    );
+}
 export default function Consultas() {
     return (
         <section>
