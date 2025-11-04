@@ -13,6 +13,7 @@ export default function NuevoPacientePage() {
     nombre: "",
     apellido: "",
     fecha_nacimiento: "",
+    genero: "",
     email: "",
     telefono: "",
     direccion: "",
@@ -38,6 +39,10 @@ export default function NuevoPacientePage() {
         throw new Error("Debe seleccionar una obra social");
       }
 
+      if (!form.genero) {
+        throw new Error("Debe seleccionar un género");
+      }
+
       if (!validarFechaNacimiento(form.fecha_nacimiento)) {
         throw new Error("La fecha de nacimiento debe ser anterior a hoy")
       }
@@ -47,6 +52,7 @@ export default function NuevoPacientePage() {
         nombre: form.nombre?.trim() || '',
         apellido: form.apellido?.trim() || '',
         fecha_nacimiento: form.fecha_nacimiento,
+        genero: form.genero,
         email: form.email?.trim() || '',
         telefono: form.telefono?.trim() || '',
         direccion: form.direccion?.trim() || '',
@@ -131,6 +137,19 @@ export default function NuevoPacientePage() {
                   </div>
                 )}
               </div>
+              <select
+                name="genero"
+                value={form.genero}
+                onChange={handleChange}
+                className={styles.select}
+                required
+              >
+                <option value="">Seleccionar Género</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+                <option value="O">Otro</option>
+                <option value="N">Prefiero no decir</option>
+              </select>
               <input
                 type="text"
                 name="nombre"

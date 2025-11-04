@@ -12,15 +12,25 @@ class ObraSocial(models.Model):
         return f"{self.nombre} ({self.id})"
 
 class Paciente(models.Model):
+    GENERO_CHOICES = [
+        ('M', 'Masculino'),
+        ('F', 'Femenino'),
+        ('O', 'Otro'),
+        ('N', 'Prefiero no decir'),
+    ]
+    
     dni = models.IntegerField(unique=True)
     nombre = models.CharField(max_length=255)
     apellido = models.CharField(max_length=255)
     fecha_nacimiento = models.DateField()
+    genero = models.CharField(max_length=1, choices=GENERO_CHOICES)
     email = models.EmailField(max_length=255)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     direccion = models.TextField(blank=True, null=True)
     numeroOS = models.CharField(max_length=50)
     obraSocial = models.ForeignKey(ObraSocial, on_delete=CASCADE)
+    
+    # Datos de contacto de emergencia
     contacto_emergencia_nombre = models.CharField(max_length=255, blank=True, null=True)
     contacto_emergencia_relacion = models.CharField(max_length=100, blank=True, null=True)
     contacto_emergencia_telefono = models.CharField(max_length=20, blank=True, null=True)
@@ -71,3 +81,16 @@ class Insumo(models.Model):
     
     def __str__(self):
         return f"{self.nombre} {self.descripcion} {self.precioUnitario}"
+    
+class Antecedente(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=CASCADE, related_name='antecedentes_medicos')
+    fecha = models.DateField()
+    descripcion = models.TextField()
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Antecedentes"
+        ordering = ['-fecha']
+
+    def __str__(self):
+        return f"{self.paciente} - {self.fecha} - {self.descripcion[:50]} ..."

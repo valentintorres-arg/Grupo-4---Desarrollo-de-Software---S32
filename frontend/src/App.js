@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
-// import PatientsPage from "./pages/PatientsPage"
-import PatientDetailPage from "./pages/PatientsPage"
+import PatientsPage from "./pages/PatientsPage";
+import PatientDetailPage from "./pages/PatientDetailPage";
 import RegisterTreatmentPage from "./pages/RegisterTreatmentPage";
 import NewPatientPage from "./pages/NewPatientsPage";
 import LoginPage from "./pages/LoginPage";
