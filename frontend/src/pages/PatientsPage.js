@@ -4,10 +4,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ModalAgregarAntecedente from "../components/componentspacieantes/Modal-agregar-antecedente";
 import Tratamientos from "../components/componentspacieantes/Tratamientos";
 import Antecedentes from "../components/componentspacieantes/Antecedentes";
+import Consultas from "../components/componentspacieantes/consultas";
+import Odontograma from "../components/componentspacieantes/Odontograma";
 
 
 
-// 🔹 Definimos Field fuera del componente principal
 const Field = React.memo(({ label, field, type = "text", value, onChange, disabled }) => {
   const s = {
     field: { display: "flex", flexDirection: "column", gap: 6 },
@@ -42,7 +43,6 @@ export default function PatientProfile() {
   const patientFromList = location.state?.patient;
 
 
-// 💾 Recuperar los antecedentes guardados o inicializar con genéricos
 const [antecedentes, setAntecedentes] = useState(() => {
   const guardados = localStorage.getItem("antecedentes");
   return guardados
@@ -56,7 +56,6 @@ const [antecedentes, setAntecedentes] = useState(() => {
 
 const [mostrarModal, setMostrarModal] = useState(false);
 
-// 🧠 Guardar en LocalStorage cada vez que cambia la lista
 useEffect(() => {
   localStorage.setItem("antecedentes", JSON.stringify(antecedentes));
 }, [antecedentes]);
@@ -100,7 +99,6 @@ useEffect(() => {
     setIsEditing(false);
   };
 
-  // 🔧 clave: no crear nuevo objeto cada letra
   const handleFieldUpdate = (field, value) => {
     draft[field] = value;
     setDraft({ ...draft });
@@ -262,9 +260,8 @@ useEffect(() => {
         </div>
       </header>
 
-      {/* Tabs */}
       <div style={s.tabsBar}>
-        {["personal", "odontograma", "antecedentes", "turnos", "tratamientos"].map((tab) => (
+        {["personal", "odontograma", "antecedentes", "tratamientos", "consultas"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveSection(tab)}
@@ -275,7 +272,6 @@ useEffect(() => {
         ))}
       </div>
 
-      {/* Contenido */}
       <section style={s.section}>
         {activeSection === "personal" && (
           <>
@@ -291,6 +287,11 @@ useEffect(() => {
               <Field label="Género" value={draft.genero} onChange={(e) => handleFieldUpdate("genero", e.target.value)} disabled={!isEditing} />
             </div>
 
+{!isEditing && (
+        <button style={s.fabEdit} onClick={handleEdit}>
+          Editar
+        </button>
+      )}
             {isEditing && (
               <div style={s.actions}>
                 <button style={{ ...s.btn, ...s.btnCancel }} onClick={handleCancel}>
@@ -304,12 +305,11 @@ useEffect(() => {
           </>
         )}
 
-        {activeSection === "odontograma" && <p>Odontograma del paciente (en construcción)</p>}
+        {activeSection === "odontograma" && <Odontograma />}
 
         {activeSection === "antecedentes" && (
           <>
             <Antecedentes />
-            {/* Este modal te permite agregar las entradas de antecedentes, cada vez que haya un hito en la vida medica del paciente. */}
             <ModalAgregarAntecedente
               isOpen={mostrarModal}
               onClose={() => setMostrarModal(false)}
@@ -320,19 +320,23 @@ useEffect(() => {
             />
           </>
         )}
-        {activeSection === "turnos" && <p>Turnos del paciente (en construcción)</p>}
 
 
         {activeSection === "tratamientos" && (
           <Tratamientos />
         )}
-      </section>
 
-      {!isEditing && (
-        <button style={s.fabEdit} onClick={handleEdit}>
-          ✏️ Editar
-        </button>
-      )}
+        {activeSection === "consultas" && (
+          <Consultas />
+
+
+
+        )}
+      </section>
+      
+
+
+      
     </div>
   );
 }
