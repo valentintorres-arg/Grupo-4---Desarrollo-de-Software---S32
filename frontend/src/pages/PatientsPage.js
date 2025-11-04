@@ -4,11 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ModalAgregarAntecedente from "../components/componentspacieantes/Modal-agregar-antecedente";
 import Tratamientos from "../components/componentspacieantes/Tratamientos";
 import Antecedentes from "../components/componentspacieantes/Antecedentes";
-<<<<<<< HEAD
 import Consultas from "../components/componentspacieantes/consultas";
-=======
 import Odontograma from "../components/componentspacieantes/Odontograma.tsx";
->>>>>>> a63ebf5 (odontograma 120%)
 
 
 
