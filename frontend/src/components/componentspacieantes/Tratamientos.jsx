@@ -102,17 +102,14 @@ export default function Tratamientos() {
         },
     };
 
-    // 🔧 Función para editar un tratamiento
     const handleEdit = (id) => {
         navigate(`/edit/${id}`);
     };
 
     return (
         <div style={s.grid}>
-            {/* 🧾 Cards de tratamientos */}
             {tratamientos.map((t) => (
                 <div key={t.id} style={s.card}>
-                    {/* ✏️ Botón de editar */}
                     <button
                         style={s.editButton}
                         onMouseOver={(e) => (e.currentTarget.style.background = "#2563eb")}
@@ -136,7 +133,6 @@ export default function Tratamientos() {
                 </div>
             ))}
 
-            {/* ➕ Card para redirigir al registro */}
             <div
                 style={s.addButton}
                 onClick={() => navigate("/register")}

@@ -287,6 +287,11 @@ useEffect(() => {
               <Field label="Género" value={draft.genero} onChange={(e) => handleFieldUpdate("genero", e.target.value)} disabled={!isEditing} />
             </div>
 
+{!isEditing && (
+        <button style={s.fabEdit} onClick={handleEdit}>
+          Editar
+        </button>
+      )}
             {isEditing && (
               <div style={s.actions}>
                 <button style={{ ...s.btn, ...s.btnCancel }} onClick={handleCancel}>
@@ -315,7 +320,7 @@ useEffect(() => {
             />
           </>
         )}
-\
+
 
         {activeSection === "tratamientos" && (
           <Tratamientos />
@@ -331,11 +336,7 @@ useEffect(() => {
       
 
 
-      {!isEditing && (
-        <button style={s.fabEdit} onClick={handleEdit}>
-          Editar
-        </button>
-      )}
+      
     </div>
   );
 }
