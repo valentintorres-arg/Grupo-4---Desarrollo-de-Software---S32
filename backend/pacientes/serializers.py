@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Paciente, ObraSocial, Antecedente
+from .models import Paciente, ObraSocial, Antecedente, EntradaAntecedente
 
 class ObraSocialSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,26 +18,39 @@ class PacienteSerializer(serializers.ModelSerializer):
             'contacto_emergencia_nombre', 'contacto_emergencia_relacion', 'contacto_emergencia_telefono'
         ]
 
-class AntecedentesSerializer(serializers.ModelSerializer):
+class EntradaAntecedenteSerializer(serializers.ModelSerializer):
     paciente_nombre = serializers.CharField(source='paciente.nombre', read_only=True)
     paciente_apellido = serializers.CharField(source='paciente.apellido', read_only=True)
 
     class Meta:
-        model = Antecedente
+        model = EntradaAntecedente
         fields = [
-            'id', 
-            'paciente', 
+            'id',
+            'paciente',
             'fecha', 
-            'descripcion', 
-            'fecha_creacion', 
-            'fecha_modificacion',
+            'antecedente',
             'paciente_nombre',
             'paciente_apellido'
         ]
-        read_only_fields = ['fecha_creacion', 'fecha_modificacion']
 
     def validate_fecha(self, value):
         from datetime import date
         if value > date.today():
             raise serializers.ValidationError("La fecha del antecedente no puede ser futura.")
         return value
+
+class AntecedenteSerializer(serializers.ModelSerializer):
+    entrada_antecedente_data = EntradaAntecedenteSerializer(source='entradaAntecedente', read_only=True)
+    paciente_nombre = serializers.CharField(source='paciente.nombre', read_only=True)
+    paciente_apellido = serializers.CharField(source='paciente.apellido', read_only=True)
+    
+    class Meta:
+        model = Antecedente
+        fields = [
+            'id',
+            'paciente',
+            'entradaAntecedente',
+            'entrada_antecedente_data',
+            'paciente_nombre',
+            'paciente_apellido'
+        ]

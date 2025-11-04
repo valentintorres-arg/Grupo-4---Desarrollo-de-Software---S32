@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { patientsAPI } from "../services/api";
 import { calcularEdad, formatearFecha } from "../utils/dateUtils";
 import ModalAgregarAntecedente from "../components/componentspacieantes/Modal-agregar-antecedente";
+import Odontograma from "../components/componentspacieantes/Odontograma";
 
 export default function PatientDetailPage() {
   const { id } = useParams();
@@ -500,9 +501,8 @@ export default function PatientDetailPage() {
 
             {/* Contenido de otros tabs */}
             {activeTab === 'odontograma' && (
-              <div style={styles.tabContent}>
-                <h3>Odontograma</h3>
-                <p>Funcionalidad en desarrollo...</p>
+              <div>
+                <Odontograma />
               </div>
             )}
 

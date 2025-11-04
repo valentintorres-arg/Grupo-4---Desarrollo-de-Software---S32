@@ -81,16 +81,3 @@ class Insumo(models.Model):
     
     def __str__(self):
         return f"{self.nombre} {self.descripcion} {self.precioUnitario}"
-    
-class Antecedente(models.Model):
-    paciente = models.ForeignKey(Paciente, on_delete=CASCADE, related_name='antecedentes_medicos')
-    fecha = models.DateField()
-    descripcion = models.TextField()
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name_plural = "Antecedentes"
-        ordering = ['-fecha']
-
-    def __str__(self):
-        return f"{self.paciente} - {self.fecha} - {self.descripcion[:50]} ..."

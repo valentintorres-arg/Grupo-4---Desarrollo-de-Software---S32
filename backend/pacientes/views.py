@@ -3,8 +3,8 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Paciente, ObraSocial, Antecedente
-from .serializers import PacienteSerializer, ObraSocialSerializer, AntecedentesSerializer
+from .models import Paciente, ObraSocial, Antecedente, EntradaAntecedente
+from .serializers import PacienteSerializer, ObraSocialSerializer, EntradaAntecedenteSerializer, AntecedenteSerializer
 
 class PacienteViewSet(viewsets.ModelViewSet):
     queryset = Paciente.objects.all()
@@ -26,19 +26,23 @@ class ObraSocialViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return ObraSocial.objects.all().order_by('nombre')
     
-class AntecedenteViewSet(viewsets.ModelViewSet):
-    serializer_class = AntecedentesSerializer
+class EntradaAntecedenteViewSet(viewsets.ModelViewSet):
+    serializer_class = EntradaAntecedenteSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = Antecedente.objects.all()
+        queryset = EntradaAntecedente.objects.all()
         paciente_id = self.request.query_params.get('paciente', None)
         if paciente_id is not None:
             queryset = queryset.filter(paciente_id=paciente_id)
-        return queryset
+        return queryset.order_by('-fecha')
 
     def perform_create(self, serializer):
-        serializer.save()
+        entrada = serializer.save()
+        Antecedente.objects.create(
+            paciente=entrada.paciente,
+            entradaAntecedente=entrada
+        )
 
     @action(detail=False, methods=['get'])
     def por_paciente(self, request):
@@ -50,11 +54,22 @@ class AntecedenteViewSet(viewsets.ModelViewSet):
             )
         
         try:
-            antecedentes = Antecedente.objects.filter(paciente_id=paciente_id)
-            serializer = self.get_serializer(antecedentes, many=True)
+            entradas = EntradaAntecedente.objects.filter(paciente_id=paciente_id).order_by('-fecha')
+            serializer = self.get_serializer(entradas, many=True)
             return Response(serializer.data)
         except Exception as e:
             return Response(
                 {'error': str(e)}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+class AntecedenteViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = AntecedenteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Antecedente.objects.all()
+        paciente_id = self.request.query_params.get('paciente', None)
+        if paciente_id is not None:
+            queryset = queryset.filter(paciente_id=paciente_id)
+        return queryset.order_by('-entradaAntecedente__fecha')
