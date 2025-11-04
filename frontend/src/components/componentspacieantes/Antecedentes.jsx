@@ -116,7 +116,7 @@
 
 
 import { useState, useEffect } from "react";
-import ModalAgregarAntecedente from "./Modal-agregar-antecedente"; // 👈 asegurate del path correcto
+import ModalAgregarAntecedente from "./Modal-agregar-antecedente"; 
 
 export default function Antecedentes() {
   const [mostrarModal, setMostrarModal] = useState(false);

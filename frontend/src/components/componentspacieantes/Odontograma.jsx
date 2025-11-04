@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Odontograma.css";
 
-interface ZonaDiente {
-  arriba?: string;
-  abajo?: string;
-  izquierda?: string;
-  derecha?: string;
-  centro?: string;
-}
-
 const diagnosticos = [
   { nombre: "Sano", color: "#ffffff" },
   { nombre: "Caries", color: "#e53935" },
@@ -29,8 +21,8 @@ export default function Odontograma() {
   const [seleccionado, setSeleccionado] = useState("Sano");
   const [odontogramaJSON, setOdontogramaJSON] = useState("");
 
-  const [dientes, setDientes] = useState<Record<number, ZonaDiente>>(() => {
-    const obj: Record<number, ZonaDiente> = {};
+  const [dientes, setDientes] = useState(() => {
+    const obj = {};
     dientesIds.flat().forEach((id) => {
       obj[id] = {
         arriba: "Sano",
@@ -43,7 +35,7 @@ export default function Odontograma() {
     return obj;
   });
 
-  // ACTUALIZACION DEL JSON
+  // 🧠 Actualización del JSON cuando cambian los datos
   useEffect(() => {
     const jsonCompleto = {
       paciente,
@@ -52,7 +44,7 @@ export default function Odontograma() {
     setOdontogramaJSON(JSON.stringify(jsonCompleto, null, 2));
   }, [paciente, dientes]);
 
-  const cambiarZona = (id: number, zona: keyof ZonaDiente) => {
+  const cambiarZona = (id, zona) => {
     setDientes((prev) => {
       const copia = { ...prev };
       const diente = { ...copia[id] };
@@ -62,15 +54,15 @@ export default function Odontograma() {
     });
   };
 
-  const colorZona = (id: number, zona: keyof ZonaDiente) => {
+  const colorZona = (id, zona) => {
     const nombre = dientes[id]?.[zona];
-    return diagnosticos.find((d) => d.nombre === nombre)?.color || "#fff";
+    const diag = diagnosticos.find((d) => d.nombre === nombre);
+    return diag ? diag.color : "#fff";
   };
 
   return (
     <div className="odontograma">
       <aside className="panel">
-
         <h3>Seleccione diagnóstico</h3>
         {diagnosticos.map((d) => (
           <label
@@ -129,12 +121,13 @@ export default function Odontograma() {
           </div>
         ))}
       </main>
-{/*
+
+      {/*
       <section className="json-viewer">
         <h3>JSON PARA VER LA ACTUALIZACION</h3>
         <pre>{odontogramaJSON}</pre>
       </section>
-*/}
+      */}
     </div>
   );
 }
