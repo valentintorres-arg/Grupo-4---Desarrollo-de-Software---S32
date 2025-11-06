@@ -83,7 +83,6 @@ export default function Navbar() {
     },
   };
 
-  // manejador para efectos hover sin CSS externo
   const handleHover = (e, isHovering) => {
     Object.assign(
       e.target.style,

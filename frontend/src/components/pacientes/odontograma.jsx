@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./Odontograma.css";
+import "./odontograma.css";
 
 const diagnosticos = [
   { nombre: "Sano", color: "#ffffff" },
@@ -35,7 +35,7 @@ export default function Odontograma() {
     return obj;
   });
 
-  // 🧠 Actualización del JSON cuando cambian los datos
+  //  Actualización del JSON cuando cambian los datos
   useEffect(() => {
     const jsonCompleto = {
       paciente,
