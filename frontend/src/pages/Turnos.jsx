@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
-import AddAppointmentForm from '../components/turnos/AddAppointmentForm'
+import AddAppointmentForm from '../components/turnos/agregar-turno'
 
-// Datos de ejemplo
+
 const mockAppointments = [
   { id: 1, date: '2025-10-20', time: '10:00', patient: 'Ana Rodríguez', reason: 'Control mensual', duration: '30 min' },
   { id: 2, date: '2025-10-20', time: '11:30', patient: 'Pedro Gómez', reason: 'Consulta general', duration: '45 min' },
@@ -25,7 +25,7 @@ export const AppointmentsPage = () => {
   const [appointments, setAppointments] = useState(mockAppointments)
   const [isHovering, setIsHovering] = useState(false)
   const [showForm, setShowForm] = useState(false)
-  const [viewMode, setViewMode] = useState('day') // 'day' o 'all'
+  const [viewMode, setViewMode] = useState('day') 
 
   const formatDate = (date) => date.toISOString().split('T')[0]
   const formatDisplayDate = (dateStr) => new Date(dateStr).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -66,7 +66,6 @@ const handleAddAppointment = (newApp) => {
   return true; 
 }
 
-  // 🔹 BORRAR TURNO
   const handleDeleteAppointment = (id) => {
     if (window.confirm('¿Seguro que querés borrar este turno?')) {
       setAppointments(prev => prev.filter(app => app.id !== id))
@@ -75,7 +74,7 @@ const handleAddAppointment = (newApp) => {
 
   const styles = {
 appointmentsContainer: { 
-  paddingTop: '6rem', // (Equivalente al pt-24 de Tailwind)
+  paddingTop: '10rem', 
   paddingBottom: '2rem', 
   paddingLeft: '2rem', 
   paddingRight: '2rem', 
@@ -84,7 +83,7 @@ appointmentsContainer: {
   boxSizing: 'border-box' ,
   
   
-},    headerTitle: { fontSize: '2em', marginBottom: '1.5rem', textAlign: 'center', fontWeight: 700, },
+},    headerTitle: { fontSize: '2em', marginBottom: '2rem', textAlign: 'center', fontWeight: 700, },
     contentLayout: { display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'flex-start' },
     calendarWrapper: { flex: '1', minWidth: '350px', maxWidth: '450px' },
     dailyAppointmentsWrapper: { flex: '1', backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', minWidth: '350px', maxWidth: '450px' },

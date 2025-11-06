@@ -1,15 +1,12 @@
-//===================================V3 BELOW=======================================
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ModalAgregarAntecedente from "../components/componentspacieantes/Modal-agregar-antecedente";
-import Tratamientos from "../components/componentspacieantes/Tratamientos";
-import Antecedentes from "../components/componentspacieantes/Antecedentes";
-import Consultas from "../components/componentspacieantes/consultas";
-import Odontograma from "../components/componentspacieantes/Odontograma";
+import ModalAgregarAntecedente from "../components/pacientes/modal-agregar-antecedente";
+import Tratamientos from "../components/tratamiento/tratamientos";
+import Antecedentes from "../components/pacientes/antecedentes";
+import Consultas from "../components/pacientes/consultas";
+import Odontograma from "../components/pacientes/odontograma";
 
-
-
-const Field = React.memo(({ label, field, type = "text", value, onChange, disabled }) => {
+const Field = React.memo(({ label, type = "text", value, onChange, disabled }) => {
   const s = {
     field: { display: "flex", flexDirection: "column", gap: 6 },
     label: { fontSize: 13, fontWeight: 700, color: "#6b7280" },
@@ -26,43 +23,35 @@ const Field = React.memo(({ label, field, type = "text", value, onChange, disabl
   return (
     <div style={s.field}>
       <label style={s.label}>{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        style={s.input}
-        disabled={disabled}
-      />
+      <input type={type} value={value} onChange={onChange} style={s.input} disabled={disabled} />
     </div>
   );
 });
 
-export default function PatientProfile() {
+export default function PerfilPaciente() {
   const navigate = useNavigate();
   const location = useLocation();
-  const patientFromList = location.state?.patient;
+  const pacienteDesdeLista = location.state?.patient;
 
+  const [antecedentes, setAntecedentes] = useState(() => {
+    const guardados = localStorage.getItem("antecedentes");
+    return guardados
+      ? JSON.parse(guardados)
+      : [
+          { id: 1, fecha: "2025-10-01", descripcion: "Dolor en molar superior derecho" },
+          { id: 2, fecha: "2025-09-15", descripcion: "Limpieza general y control" },
+          { id: 3, fecha: "2025-08-20", descripcion: "Tratamiento de caries en incisivo" },
+        ];
+  });
 
-const [antecedentes, setAntecedentes] = useState(() => {
-  const guardados = localStorage.getItem("antecedentes");
-  return guardados
-    ? JSON.parse(guardados)
-    : [
-        { id: 1, fecha: "2025-10-01", descripcion: "Dolor en molar superior derecho" },
-        { id: 2, fecha: "2025-09-15", descripcion: "Limpieza general y control" },
-        { id: 3, fecha: "2025-08-20", descripcion: "Tratamiento de caries en incisivo" },
-      ];
-});
+  const [mostrarModal, setMostrarModal] = useState(false);
 
-const [mostrarModal, setMostrarModal] = useState(false);
+  useEffect(() => {
+    localStorage.setItem("antecedentes", JSON.stringify(antecedentes));
+  }, [antecedentes]);
 
-useEffect(() => {
-  localStorage.setItem("antecedentes", JSON.stringify(antecedentes));
-}, [antecedentes]);
-
-
-  const [patientData, setPatientData] = useState(
-    patientFromList || {
+  const [paciente, setPaciente] = useState(
+    pacienteDesdeLista || {
       id: "000000",
       nombre: "Paciente",
       apellido: "Desconocido",
@@ -76,32 +65,31 @@ useEffect(() => {
     }
   );
 
-  const [draft, setDraft] = useState({ ...patientData });
-  const [isEditing, setIsEditing] = useState(false);
-  const [activeSection, setActiveSection] = useState("personal");
+  const [draft, setDraft] = useState({ ...paciente });
+  const [editando, setEditando] = useState(false);
+  const [seccionActiva, setSeccionActiva] = useState("personal");
 
-  const calculateAge = (birthDate) => {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-    return age;
+  const calcularEdad = (fechaNacimiento) => {
+    const hoy = new Date();
+    const nacimiento = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
+    return edad;
   };
 
-  const handleEdit = () => setIsEditing(true);
-  const handleCancel = () => {
-    setDraft({ ...patientData });
-    setIsEditing(false);
+  const handleEditar = () => setEditando(true);
+  const handleCancelar = () => {
+    setDraft({ ...paciente });
+    setEditando(false);
   };
-  const handleSave = () => {
-    setPatientData({ ...draft });
-    setIsEditing(false);
+  const handleGuardar = () => {
+    setPaciente({ ...draft });
+    setEditando(false);
   };
 
-  const handleFieldUpdate = (field, value) => {
-    draft[field] = value;
-    setDraft({ ...draft });
+  const actualizarCampo = (campo, valor) => {
+    setDraft((prev) => ({ ...prev, [campo]: valor }));
   };
 
   const s = {
@@ -124,7 +112,7 @@ useEffect(() => {
     },
     backBtn: {
       position: "absolute",
-      top: 16,
+      top: 30,
       left: 20,
       display: "inline-flex",
       alignItems: "center",
@@ -241,63 +229,70 @@ useEffect(() => {
     },
   };
 
+  const tabs = [
+    { id: "personal", label: "Datos personales" },
+    { id: "odontograma", label: "Odontograma" },
+    { id: "antecedentes", label: "Antecedentes" },
+    { id: "tratamientos", label: "Tratamientos" },
+    { id: "consultas", label: "Consultas" },
+  ];
+
   return (
     <div style={s.page}>
       <header style={s.header}>
-        <button style={s.backBtn} onClick={() => navigate("/patients")}>
+        <button style={s.backBtn} onClick={() => navigate("/pacientes")}>
           ← Volver
         </button>
         <div style={s.headerInfo}>
           <div style={s.avatar}>
-            {patientData.genero === "Masculino" ? "👨" : "👩"}
+            {paciente.genero === "Masculino" ? "👨" : "👩"}
           </div>
           <div>
             <h2 style={s.name}>
-              {patientData.nombre} {patientData.apellido}
+              {paciente.nombre} {paciente.apellido}
             </h2>
-            <p style={s.age}>{calculateAge(patientData.fechaNacimiento)} años</p>
+            <p style={s.age}>{calcularEdad(paciente.fechaNacimiento)} años</p>
           </div>
         </div>
       </header>
 
       <div style={s.tabsBar}>
-        {["personal", "odontograma", "antecedentes", "tratamientos", "consultas"].map((tab) => (
+        {tabs.map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveSection(tab)}
-            style={{ ...s.tab, ...(activeSection === tab ? s.tabActive : {}) }}
+            key={tab.id}
+            onClick={() => setSeccionActiva(tab.id)}
+            style={{
+              ...s.tab,
+              ...(seccionActiva === tab.id ? s.tabActive : {}),
+            }}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab.label}
           </button>
         ))}
       </div>
 
       <section style={s.section}>
-        {activeSection === "personal" && (
+        {seccionActiva === "personal" && (
           <>
             <div style={s.grid}>
-              <Field label="Nombre" value={draft.nombre} onChange={(e) => handleFieldUpdate("nombre", e.target.value)} disabled={!isEditing} />
-              <Field label="Apellido" value={draft.apellido} onChange={(e) => handleFieldUpdate("apellido", e.target.value)} disabled={!isEditing} />
-              <Field label="DNI" value={draft.dni} onChange={(e) => handleFieldUpdate("dni", e.target.value)} disabled={!isEditing} />
-              <Field label="Fecha de nacimiento" type="date" value={draft.fechaNacimiento} onChange={(e) => handleFieldUpdate("fechaNacimiento", e.target.value)} disabled={!isEditing} />
-              <Field label="Teléfono" value={draft.telefono} onChange={(e) => handleFieldUpdate("telefono", e.target.value)} disabled={!isEditing} />
-              <Field label="Email" type="email" value={draft.email} onChange={(e) => handleFieldUpdate("email", e.target.value)} disabled={!isEditing} />
-              <Field label="Obra Social" value={draft.obraSocial} onChange={(e) => handleFieldUpdate("obraSocial", e.target.value)} disabled={!isEditing} />
-              <Field label="Dirección" value={draft.direccion} onChange={(e) => handleFieldUpdate("direccion", e.target.value)} disabled={!isEditing} />
-              <Field label="Género" value={draft.genero} onChange={(e) => handleFieldUpdate("genero", e.target.value)} disabled={!isEditing} />
+              <Field label="Nombre" value={draft.nombre} onChange={(e) => actualizarCampo("nombre", e.target.value)} disabled={!editando} />
+              <Field label="Apellido" value={draft.apellido} onChange={(e) => actualizarCampo("apellido", e.target.value)} disabled={!editando} />
+              <Field label="DNI" value={draft.dni} onChange={(e) => actualizarCampo("dni", e.target.value)} disabled={!editando} />
+              <Field label="Fecha de nacimiento" type="date" value={draft.fechaNacimiento} onChange={(e) => actualizarCampo("fechaNacimiento", e.target.value)} disabled={!editando} />
+              <Field label="Teléfono" value={draft.telefono} onChange={(e) => actualizarCampo("telefono", e.target.value)} disabled={!editando} />
+              <Field label="Email" type="email" value={draft.email} onChange={(e) => actualizarCampo("email", e.target.value)} disabled={!editando} />
+              <Field label="Obra Social" value={draft.obraSocial} onChange={(e) => actualizarCampo("obraSocial", e.target.value)} disabled={!editando} />
+              <Field label="Dirección" value={draft.direccion} onChange={(e) => actualizarCampo("direccion", e.target.value)} disabled={!editando} />
+              <Field label="Género" value={draft.genero} onChange={(e) => actualizarCampo("genero", e.target.value)} disabled={!editando} />
             </div>
 
-{!isEditing && (
-        <button style={s.fabEdit} onClick={handleEdit}>
-          Editar
-        </button>
-      )}
-            {isEditing && (
+            {!editando && <button style={s.fabEdit} onClick={handleEditar}>Editar</button>}
+            {editando && (
               <div style={s.actions}>
-                <button style={{ ...s.btn, ...s.btnCancel }} onClick={handleCancel}>
+                <button style={{ ...s.btn, ...s.btnCancel }} onClick={handleCancelar}>
                   Cancelar
                 </button>
-                <button style={{ ...s.btn, ...s.btnSave }} onClick={handleSave}>
+                <button style={{ ...s.btn, ...s.btnSave }} onClick={handleGuardar}>
                   Guardar cambios
                 </button>
               </div>
@@ -305,9 +300,8 @@ useEffect(() => {
           </>
         )}
 
-        {activeSection === "odontograma" && <Odontograma />}
-
-        {activeSection === "antecedentes" && (
+        {seccionActiva === "odontograma" && <Odontograma />}
+        {seccionActiva === "antecedentes" && (
           <>
             <Antecedentes />
             <ModalAgregarAntecedente
@@ -320,23 +314,9 @@ useEffect(() => {
             />
           </>
         )}
-
-
-        {activeSection === "tratamientos" && (
-          <Tratamientos />
-        )}
-
-        {activeSection === "consultas" && (
-          <Consultas />
-
-
-
-        )}
+        {seccionActiva === "tratamientos" && <Tratamientos />}
+        {seccionActiva === "consultas" && <Consultas />}
       </section>
-      
-
-
-      
     </div>
   );
 }

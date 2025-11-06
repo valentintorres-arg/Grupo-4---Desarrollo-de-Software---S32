@@ -1,127 +1,10 @@
-// export default function Antecedentes() {
-//   const styles = {
-//     form: "bg-white shadow p-6 rounded-lg space-y-4 w-full md:w-2/3",
-//     input: "w-full border px-3 py-2 rounded",
-//     textarea: "w-full border px-3 py-2 rounded",
-//     button: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition",
-//   };
-
-//   return (
-//     <form onSubmit={onSubmit} className={styles.form}>
-//       <input
-//         type="text"
-//         name="pacienteId"
-//         placeholder="DNI del Paciente"
-//         value={formulario.pacienteId}
-//         onChange={onChange}
-//         className={styles.input}
-//         required
-//       />
-
-//       <input
-//         type="date"
-//         name="fechaInicio"
-//         value={formulario.fechaInicio}
-//         onChange={onChange}
-//         className={styles.input}
-//         required
-//       />
-
-//       <textarea
-//         name="descripcion"
-//         placeholder="Descripción del Tratamiento"
-//         value={formulario.descripcion}
-//         onChange={onChange}
-//         className={styles.textarea}
-//         required
-//       />
-
-//       <button type="submit" className={styles.button}>
-//         Registrar
-//       </button>
-//     </form>
-//   );
-// }
-
-// import { useState } from "react";
-
-// export default function Antecedentes() {
-//   const [formulario, setFormulario] = useState({
-//     pacienteId: "",
-//     fechaInicio: "",
-//     descripcion: "",
-//   });
-
-//   const onChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormulario({ ...formulario, [name]: value });
-//   };
-
-//   const onSubmit = (e) => {
-//     e.preventDefault();
-//     console.log("Datos del antecedente:", formulario);
-//     alert("Antecedente registrado correctamente ✅");
-
-//     // Reinicia el formulario
-//     setFormulario({
-//       pacienteId: "",
-//       fechaInicio: "",
-//       descripcion: "",
-//     });
-//   };
-
-//   const styles = {
-//     form: "bg-white shadow p-6 rounded-lg space-y-4 w-full md:w-2/3",
-//     input: "w-full border px-3 py-2 rounded",
-//     textarea: "w-full border px-3 py-2 rounded",
-//     button: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition",
-//   };
-
-//   return (
-//     <form onSubmit={onSubmit} className={styles.form}>
-//       <input
-//         type="text"
-//         name="pacienteId"
-//         placeholder="DNI del Paciente"
-//         value={formulario.pacienteId}
-//         onChange={onChange}
-//         className={styles.input}
-//         required
-//       />
-
-//       <input
-//         type="date"
-//         name="fechaInicio"
-//         value={formulario.fechaInicio}
-//         onChange={onChange}
-//         className={styles.input}
-//         required
-//       />
-
-//       <textarea
-//         name="descripcion"
-//         placeholder="Descripción del Tratamiento"
-//         value={formulario.descripcion}
-//         onChange={onChange}
-//         className={styles.textarea}
-//         required
-//       />
-
-//       <button type="submit" className={styles.button}>
-//         Registrar
-//       </button>
-//     </form>
-//   );
-// }
-
 
 import { useState, useEffect } from "react";
-import ModalAgregarAntecedente from "./Modal-agregar-antecedente"; 
+import ModalAgregarAntecedente from "./modal-agregar-antecedente"; 
 
 export default function Antecedentes() {
   const [mostrarModal, setMostrarModal] = useState(false);
 
-  // 💾 Cargar antecedentes desde localStorage o usar ejemplos por defecto
   const [antecedentes, setAntecedentes] = useState(() => {
     const guardados = localStorage.getItem("antecedentes");
     return guardados
@@ -133,7 +16,6 @@ export default function Antecedentes() {
         ];
   });
 
-  // 🧠 Guardar en localStorage cada vez que se actualicen
   useEffect(() => {
     localStorage.setItem("antecedentes", JSON.stringify(antecedentes));
   }, [antecedentes]);
@@ -196,7 +78,6 @@ export default function Antecedentes() {
   return (
     <>
       <div style={s.grid}>
-        {/* 🧾 Cards de antecedentes */}
         {antecedentes.map((a) => (
           <div key={a.id} style={s.card}>
             <p style={{ fontSize: 14, color: "#64748b", fontWeight: 500 }}>
@@ -208,7 +89,6 @@ export default function Antecedentes() {
           </div>
         ))}
 
-        {/* ➕ Card para abrir modal */}
         <div
           style={s.addButton}
           onClick={() => setMostrarModal(true)}
@@ -235,7 +115,6 @@ export default function Antecedentes() {
         </button>
       </div>
 
-      {/* 🪟 Modal para agregar nuevo antecedente */}
       <ModalAgregarAntecedente
         isOpen={mostrarModal}
         onClose={() => setMostrarModal(false)}

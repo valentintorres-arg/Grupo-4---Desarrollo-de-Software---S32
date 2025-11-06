@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { usePatients } from "../contexts/patients-context";
+import { usePatients } from "../../contexts/pacientes-context";
 import { useNavigate } from "react-router-dom";
-import { PatientsProvider } from "../contexts/patients-context";
 
 export default function NuevoPacientePage() {
   const { addPatient } = usePatients();
@@ -69,7 +68,7 @@ export default function NuevoPacientePage() {
       },
     };
     addPatient(newPatient);
-    navigate("/patients");
+    navigate("/pacientes");
   };
 
   const styles = {
@@ -91,7 +90,6 @@ export default function NuevoPacientePage() {
         <h2 className={styles.title}>Registrar Nuevo Paciente</h2>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          {/* Información Personal */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Información Personal</h3>
             <input
@@ -169,7 +167,6 @@ export default function NuevoPacientePage() {
             )}
           </div>
 
-          {/* Contacto de Emergencia */}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Contacto de Emergencia</h3>
             <input
@@ -198,7 +195,6 @@ export default function NuevoPacientePage() {
             />
           </div>
 
-          {/* Botón de Guardar */}
           <div className={styles.submitButtonContainer}>
             <button type="submit" className={styles.submitButton}>
               Agregar Paciente

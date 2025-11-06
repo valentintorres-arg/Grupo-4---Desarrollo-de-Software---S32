@@ -33,12 +33,16 @@ export default function PatientsListPage() {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      padding: "90px 20px 40px",
+      padding: "140px 20px 10px",
+      
+   
+      
     },
     title: {
       fontSize: "2rem",
       fontWeight: 700,
-      marginBottom: "20px",
+      marginBottom: "10px",
+      
     },
     searchContainer: {
       display: "flex",
@@ -106,7 +110,7 @@ export default function PatientsListPage() {
     <div style={s.page}>
       <h2 style={s.title}>Listado de Pacientes</h2>
 
-      {/* 🔎 Barra de búsqueda + botón */}
+    
       <div style={s.searchContainer}>
         <input
           type="text"
@@ -135,7 +139,7 @@ export default function PatientsListPage() {
         </button>
       </div>
 
-      {/* 📋 Lista */}
+ 
       <div style={s.list}>
         {filtered.length > 0 ? (
           filtered.map((p) => (
