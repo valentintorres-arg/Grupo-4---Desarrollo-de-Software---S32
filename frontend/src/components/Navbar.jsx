@@ -35,9 +35,12 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { isAuthenticated, logout, getUserData } from "../utils/auth";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const isLoggedIn = isAuthenticated();
+  const userData = getUserData();
 
   const styles = {
     header: {
@@ -81,19 +84,54 @@ export default function Navbar() {
       borderColor: "transparent",
       color: "white",
     },
+    userInfo: {
+  color: "#e2e8f0",
+  fontSize: "0.9rem",
+  fontWeight: "500",
+  padding: "10px 14px",
+},
+logoutBtn: {
+  padding: "10px 14px",
+  borderRadius: "12px",
+  border: "1px solid rgba(239,68,68,.5)",
+  background: "#dc2626",
+  color: "#ffffff",
+  cursor: "pointer",
+  fontWeight: "600",
+  transition: "all 0.2s ease",
+},
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   const handleHover = (e, isHovering) => {
     Object.assign(
       e.target.style,
-      isHovering ? styles.btnHover : { background: "#0e1a3a" }
+      isHovering 
+        ? { 
+            background: "#1e293b",
+            border: "1px solid rgba(148,163,184,.25)"
+          }
+        : { 
+            background: "#0e1a3a",
+            border: "1px solid rgba(148,163,184,.25)"
+          }
     );
   };
 
   return (
     <header style={styles.header}>
-      <h1 style={styles.title}>OdontoSys 🦷</h1>
-      <div style={styles.navButtons}>
+      <h1 
+        style={{...styles.title, cursor: "pointer"}} 
+        onClick={() => navigate("/")}
+      >
+        OdontoLeto 🦷
+      </h1>
+      {isLoggedIn && (
+        <div style={styles.navButtons}>
         <button
           style={styles.btn}
           onMouseEnter={(e) => handleHover(e, true)}
@@ -120,12 +158,29 @@ export default function Navbar() {
         </button>
        
         <button
-          style={{ ...styles.btn, ...styles.btnPrimary }}
+          style={{
+            ...styles.btn,
+            border: "1px solid rgba(148,163,184,.25)",
+            outline: "none"
+          }}
+          onMouseEnter={(e) => handleHover(e, true)}
+          onMouseLeave={(e) => handleHover(e, false)}
           onClick={() => navigate("/register")}
         >
           Registrar Tratamiento
         </button>
+        {/* Info del usuario y logout */}
+        <span style={styles.userInfo}>
+          👨‍⚕️ {userData.matricula}
+        </span>
+        <button
+          style={styles.logoutBtn}
+          onClick={handleLogout}
+        >
+          Cerrar Sesión
+        </button>
       </div>
+      )}
     </header>
   );
 }

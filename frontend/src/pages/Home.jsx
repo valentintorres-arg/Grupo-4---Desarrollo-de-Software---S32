@@ -1,9 +1,15 @@
 
 
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { isAuthenticated, getUserData, getAuthHeaders } from "../utils/auth";
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const isLoggedIn = isAuthenticated();
+  const userData = getUserData();
+  const [ odontologoInfo, setOdontologoInfo ] = useState(null);
+  const [ loading, setLoading ] = useState(false);
 
   const styles = {
     container: {
@@ -53,7 +59,39 @@ export default function HomePage() {
       transform: "translateY(-2px)",
       boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
     },
+    subtituloSecundario: {
+      fontSize: "1rem",
+      color: "#64748b",
+      marginBottom: "20px",
+    },
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setLoading(true);
+      fetch('http://localhost:8000/odontologos/perfil/', {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Error al obtener perfil');
+      })
+      .then(data => {
+        setOdontologoInfo(data);
+        console.log('Perfil Obtenido:', data);
+      })
+      .catch(error => {
+        console.error('Error obteniendo perfil:', error);
+        setOdontologoInfo({nombre_completo: `Matricula ${userData.matricula}`});
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    }
+  }, [isLoggedIn, userData.matricula]);
 
   const handleHover = (e, isHovering) => {
     Object.assign(e.target.style, isHovering ? styles.botonHover : {});
@@ -61,17 +99,35 @@ export default function HomePage() {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.titulo}>Bienvenido a OdontoSys 🦷</h2>
-      <p style={styles.subtitulo}>Seleccione una opción del menú</p>
+      <h2 style={styles.titulo}>Bienvenido a OdontoLeto 🦷</h2>
 
-      <button
-        style={styles.boton}
-        onMouseEnter={(e) => handleHover(e, true)}
-        onMouseLeave={(e) => handleHover(e, false)}
-        onClick={() => navigate("/login")}
-      >
-        Iniciar Sesión
-      </button>
+      {isLoggedIn ? (
+        <>
+          <p style={styles.subtitulo}>
+            {loading ? (
+              '¡Hola Doctor! Cargando...'
+            ) : (
+              `¡Hola Dr/Dra. ${odontologoInfo?.nombre_completo || userData.matricula}!`
+            )}
+          </p>
+          <p style={styles.subtituloSecundario}>
+            Selecciona una opción del menú para continuar
+          </p>
+        </>
+      ) : (
+        <>
+          <p style={styles.subtitulo}>Seleccione una opción del menú</p>
+          <button
+            style={styles.boton}
+            onMouseEnter={(e) => handleHover(e, true)}
+            onMouseLeave={(e) => handleHover(e, false)}
+            onClick={() => navigate("/login")}
+          >
+            Iniciar Sesión
+          </button>
+        </>
+      )}
+      
     </div>
   );
 }

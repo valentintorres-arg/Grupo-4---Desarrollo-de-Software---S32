@@ -1,36 +1,64 @@
 .odontograma {
   display: flex;
-  flex-wrap: wrap;
-  font-family: Arial, sans-serif;
-  gap: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  gap: 24px;
   justify-content: center;
-  padding: 10px;
-  background: rgb(255, 255, 255);
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  min-height: 600px;
 }
 
 .panel {
-  min-width: 220px;
-  border-right: 1px solid #ddd;
-  padding: 10px;
+  min-width: 260px;
+  max-width: 280px;
+  border-right: 2px solid #e5e7eb;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.panel h3 {
+  color: #374151;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .opcion {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 6px 0;
+  gap: 12px;
+  margin: 8px 0;
   cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.opcion:hover {
+  background-color: #e5e7eb;
 }
 
 .color {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  border: 1px solid #555;
+  border: 2px solid #6b7280;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .opcion.activo {
-  font-weight: bold;
+  font-weight: 600;
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.opcion.activo .color {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px #bfdbfe;
 }
 
 .mapa {
@@ -38,29 +66,55 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 25px;
+  gap: 30px;
   padding: 20px;
-  flex-wrap: wrap;
+  max-width: 1000px;
+}
+
+.arcada-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.arcada-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  background: #f3f4f6;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #d1d5db;
+  text-align: center;
 }
 
 .fila {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 12px;
   justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .diente {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  border: 2px solid #888;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  background-color: #f9f9f9;
+  border: 3px solid #6b7280;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.diente:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Zonas del diente (divididas con clip-path en forma de círculo) */
@@ -98,32 +152,68 @@
 
 /* Centro */
 .centro {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 1px solid #555;
+  border: 2px solid #6b7280;
   position: relative;
   z-index: 2;
   background-color: white;
-  font-size: 11px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.centro:hover {
+  border-color: #374151;
+  transform: scale(1.05);
 }
 
 /* Responsividad */
+@media (max-width: 1200px) {
+  .odontograma {
+    margin: 10px;
+    gap: 20px;
+  }
+  
+  .mapa {
+    gap: 25px;
+  }
+  
+  .fila {
+    gap: 10px;
+  }
+  
+  .diente {
+    width: 65px;
+    height: 65px;
+  }
+  
+  .centro {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+}
+
 @media (max-width: 900px) {
   .odontograma {
     flex-direction: column;
     align-items: center;
+    margin: 5px;
   }
 
   .panel {
     border-right: none;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 2px solid #e5e7eb;
     width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
   }
 
   .fila {
@@ -131,25 +221,41 @@
   }
 
   .diente {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
   }
 
   .centro {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     font-size: 10px;
   }
 }
 
-@media (max-width: 500px) {
-  .diente {
-    width: 45px;
-    height: 45px;
+@media (max-width: 600px) {
+  .odontograma {
+    padding: 15px;
+    gap: 15px;
   }
+  
+  .diente {
+    width: 50px;
+    height: 50px;
+  }
+  
   .centro {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
+    font-size: 9px;
+  }
+  
+  .fila {
+    gap: 6px;
+  }
+  
+  .mapa {
+    gap: 20px;
+    padding: 10px;
   }
 }
 /*parte del json*/
