@@ -1,15 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import HomePage from "./pages/HomePage";
+import HomePage from "./pages/Home";
 import PatientDetailPage from "./pages/PatientDetailPage";
-import RegisterTreatmentPage from "./pages/RegisterTreatmentPage";
-import NewPatientPage from "./pages/NewPatientsPage";
-import LoginPage from "./pages/LoginPage";
-import PatientsList from "./pages/PatientsList";
-import AppointmentsPage from "./pages/AppointmentsPage";
-import Antecedentes from "./components/componentspacieantes/Antecedentes";
+import RegisterTreatmentPage from "./pages/Tratamiento";
+import NewPatientPage from "./components/pacientes/nuevo-paciente";
+import LoginPage from "./pages/Login";
+import PatientsList from "./components/pacientes/listado-pacientes";
+import AppointmentsPage from "./pages/Turnos";
+import Antecedentes from "./components/pacientes/antecedentes";
 
-import { PatientsProvider } from "./contexts/patients-context";
+import { PatientsProvider } from "./contexts/pacientes-context";
 
 function App() {
   return (
@@ -22,7 +22,7 @@ function App() {
           <Route path="/patients/new" element={<NewPatientPage />} />
           <Route path="/patients/:id" element={<PatientDetailPage />} />
           <Route path="/register" element={<RegisterTreatmentPage />} />
-          <Route path="/login" element={<LoginPage/>} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/appointments" element={<AppointmentsPage />} />
           <Route path="/antecedentes" element={<Antecedentes />} />
         </Routes>

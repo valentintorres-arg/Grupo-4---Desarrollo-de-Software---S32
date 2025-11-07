@@ -1,6 +1,6 @@
 import { useState } from "react";
-import FormularioTratamiento from "../components/tratamiento/FormTratamiento";
-import VistaPreviaTratamiento from "../components/tratamiento/VIstaPreviaTratamiento";
+import FormularioTratamiento from "../components/tratamiento/form-tratamiento";
+import VistaPreviaTratamiento from "../components/tratamiento/vista-previa-tratamiento";
 
 export default function RegistrarTratamientoPage() {
   const [formulario, setFormulario] = useState({
@@ -28,6 +28,8 @@ export default function RegistrarTratamientoPage() {
       fontSize: "2rem",
       fontWeight: 700,
       marginBottom: "20px",
+      marginTop:"3rem",
+
     },
   };
 
@@ -44,7 +46,6 @@ export default function RegistrarTratamientoPage() {
       </header>
 
       <div className={styles.layout}>
-        {/* Componentes funcionales separados */}
         <FormularioTratamiento
           formulario={formulario}
           onChange={manejarCambio}
