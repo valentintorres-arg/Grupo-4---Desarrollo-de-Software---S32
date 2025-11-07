@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { usePatients } from "../hooks/usePatients";
+import { usePatients } from "../../hooks/usePatients";
 import { useNavigate } from "react-router-dom";
-import { calcularEdad, validarFechaNacimiento } from "../utils/dateUtils";
+import { calcularEdad, validarFechaNacimiento } from "../../utils/dateUtils";
 
 export default function NuevoPacientePage() {
   const { createPatient, obrasSociales, loading, error, setError } = usePatients();

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import ModalAgregarAntecedente from "./Modal-agregar-antecedente";
+import ModalAgregarAntecedente from "./modal-agregar-antecedente";
 import { patientsAPI } from "../../services/api";
 import { formatearFecha } from "../../utils/dateUtils";
 

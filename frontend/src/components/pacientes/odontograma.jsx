@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { odontogramaAPI } from "../../services/api";
-import "./Odontograma.css";
+import "./odontograma.css";
 
 const diagnosticos = [
   { nombre: "Sano", color: "#ffffff", codigo: "blanco" },

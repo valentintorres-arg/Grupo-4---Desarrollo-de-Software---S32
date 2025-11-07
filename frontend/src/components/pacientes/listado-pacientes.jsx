@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { usePatients } from "../hooks/usePatients";
+import { usePatients } from "../../hooks/usePatients";
 
 export default function PatientsListPage() {
   const navigate = useNavigate();

@@ -2,10 +2,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { patientsAPI } from "../services/api";
 import { calcularEdad, formatearFecha } from "../utils/dateUtils";
-import Odontograma from "../components/componentspacieantes/Odontograma";
-import Antecedentes from "../components/componentspacieantes/Antecedentes";
+import Odontograma from "../components/pacientes/odontograma";
+import Antecedentes from "../components/pacientes/antecedentes";
 import PatientAppointments from "../components/turnos/PatientAppointments";
-import VistaPreviaTratamiento from "../components/tratamiento/VIstaPreviaTratamiento";
+import VistaPreviaTratamiento from "../components/tratamiento/vista-previa-tratamiento";
 
 export default function PatientDetailPage() {
   const { id } = useParams();

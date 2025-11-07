@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
-import AddAppointmentForm from '../components/turnos/AddAppointmentForm'
+import AddAppointmentForm from '../components/turnos/agregar-turno'
 import { turnosAPI, patientsAPI, odontologosAPI } from '../services/api'
 
 const parseDurationToMinutes = (duration) => {

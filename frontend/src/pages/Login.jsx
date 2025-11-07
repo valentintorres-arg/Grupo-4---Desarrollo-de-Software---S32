@@ -103,7 +103,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import logo1 from "../components/icons/logo1.png";
 import { getUserData } from "../utils/auth";
 
 export default function Login() {
@@ -332,7 +331,7 @@ export default function Login() {
           {/* Header */}
           <div style={styles.header}>
             <div style={styles.logoContainer}>
-              <img src={logo1} alt="Logo" style={styles.logo} />
+              <img src="/imagenes/logo1.png" alt="Logo" style={styles.logo} />
             </div>
             <h1 style={styles.title}>Iniciar Sesión</h1>
             <p style={styles.subtitle}>Accede con tu matrícula y contraseña</p>
