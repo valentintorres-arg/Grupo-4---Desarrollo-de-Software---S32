@@ -129,7 +129,7 @@ logoutBtn: {
         style={{...styles.title, cursor: "pointer"}} 
         onClick={() => navigate("/")}
       >
-        OdontoSys 🦷
+        OdontoLeto 🦷
       </h1>
       {isLoggedIn && (
         <div style={styles.navButtons}>

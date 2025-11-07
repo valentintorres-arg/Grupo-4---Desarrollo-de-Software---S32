@@ -124,7 +124,7 @@ export default function HomePage() {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.titulo}>Bienvenido a OdontoSys 🦷</h2>
+      <h2 style={styles.titulo}>Bienvenido a OdontoLeto 🦷</h2>
 
       {isLoggedIn ? (
         <>
