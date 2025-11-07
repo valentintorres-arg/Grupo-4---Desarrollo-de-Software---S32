@@ -80,8 +80,20 @@ export const AppointmentsPage = () => {
     }
   };
 
-  const formatDate = (date) => date.toISOString().split('T')[0]
-  const formatDisplayDate = (dateStr) => new Date(dateStr).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  const formatDisplayDate = (dateStr) => {
+    const date = new Date(dateStr + 'T00:00:00'); // Forzar interpretación local
+    return date.toLocaleDateString('es-ES', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    });
+  };
 
   const dailyAppointments = viewMode === 'day'
     ? appointments.filter(app => app.date === formatDate(selectedDate)).sort((a, b) => a.time.localeCompare(b.time))
