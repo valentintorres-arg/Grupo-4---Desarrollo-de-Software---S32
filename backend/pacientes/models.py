@@ -81,3 +81,19 @@ class Insumo(models.Model):
     
     def __str__(self):
         return f"{self.nombre} {self.descripcion} {self.precioUnitario}"
+
+class Turno(models.Model):
+    fecha = models.DateField()
+    hora = models.TimeField()
+    duracion = models.CharField(max_length=20)
+    motivo = models.TextField()
+    paciente = models.ForeignKey(Paciente, on_delete=CASCADE, related_name='turnos')
+    odontologo = models.ForeignKey('odontologos.Odontologo', on_delete=CASCADE, related_name='turnos')
+    
+    class Meta:
+        verbose_name_plural = "Turnos"
+        ordering = ['-fecha', '-hora']
+        unique_together = ['fecha', 'hora', 'odontologo']
+    
+    def __str__(self):
+        return f"Turno: {self.paciente} - {self.fecha} {self.hora} con Dr. {self.odontologo}"

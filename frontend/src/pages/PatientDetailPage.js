@@ -2,8 +2,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { patientsAPI } from "../services/api";
 import { calcularEdad, formatearFecha } from "../utils/dateUtils";
-import ModalAgregarAntecedente from "../components/componentspacieantes/Modal-agregar-antecedente";
 import Odontograma from "../components/componentspacieantes/Odontograma";
+import Antecedentes from "../components/componentspacieantes/Antecedentes";
+import PatientAppointments from "../components/turnos/PatientAppointments";
 
 export default function PatientDetailPage() {
   const { id } = useParams();
@@ -11,9 +12,7 @@ export default function PatientDetailPage() {
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('Personal');
-  const [antecedentes, setAntecedentes] = useState([]);
-  const [showModalAntecedente, setShowModalAntecedente] = useState(false);
+  const [activeTab, setActiveTab] = useState('personal');
 
   useEffect(() => {
     const loadPatient = async () => {
@@ -33,20 +32,6 @@ export default function PatientDetailPage() {
       loadPatient();
     }
   }, [id]);
-
-  const handleAddAntecedente = (nuevoAntecedente) => {
-    const antecedenteConId = {
-      ...nuevoAntecedente,
-      id: Date.now(),
-      paciente_id: patient.id
-    };
-    setAntecedentes(prev => [...prev, antecedenteConId]);
-  };
-
-  const handleDeleteAntecedente = (id) => {
-    setAntecedentes(prev => prev.filter(ant => ant.id !== id));
-    console.log('Antecedente eliminado:', id);
-  };
 
   const styles = {
     container: {
@@ -203,57 +188,6 @@ export default function PatientDetailPage() {
       padding: "60px 20px",
       color: "#6b7280",
       fontSize: "1.1rem",
-    },
-    addButton: {
-      backgroundColor: "#3b82f6",
-      color: "#fff",
-      border: "none",
-      borderRadius: "8px",
-      padding: "10px 16px",
-      fontSize: "14px",
-      fontWeight: "500",
-      cursor: "pointer",
-      transition: "all 0.2s ease",
-      marginBottom: "20px",
-    },
-    antecedenteCard: {
-      backgroundColor: "#f8fafc",
-      border: "1px solid #e5e7eb",
-      borderRadius: "8px",
-      padding: "16px",
-      marginBottom: "12px",
-      position: "relative",
-    },
-    antecedenteDate: {
-      fontSize: "0.875rem",
-      fontWeight: "600",
-      color: "#3b82f6",
-      marginBottom: "8px",
-    },
-    antecedenteDescription: {
-      fontSize: "1rem",
-      color: "#374151",
-      lineHeight: "1.5",
-    },
-    deleteButton: {
-      position: "absolute",
-      top: "12px",
-      right: "12px",
-      backgroundColor: "#ef4444",
-      color: "#fff",
-      border: "none",
-      borderRadius: "6px",
-      padding: "4px 8px",
-      fontSize: "12px",
-      cursor: "pointer",
-      transition: "all 0.2s ease",
-    },
-    emptyState: {
-      textAlign: "center",
-      padding: "40px 20px",
-      color: "#6b7280",
-      fontSize: "1rem",
-      fontStyle: "italic",
     },
     
   };
@@ -509,58 +443,18 @@ export default function PatientDetailPage() {
             {activeTab === 'antecedentes' && (
               <div>
                 <div style={styles.section}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                    <h2 style={styles.sectionTitle}>
-                      <span style={styles.icon}>📋</span>
-                      Antecedentes Médicos
-                    </h2>
-                    <button
-                      style={styles.addButton}
-                      onClick={() => setShowModalAntecedente(true)}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = "#2563eb"}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = "#3b82f6"}
-                    >
-                      + Agregar Antecedente
-                    </button>
-                  </div>
-
-                  {antecedentes.length === 0 ? (
-                    <div style={styles.emptyState}>
-                      No hay antecedentes médicos registrados.
-                      <br />
-                      Haga clic en "Agregar Antecedente" para comenzar.
-                    </div>
-                  ) : (
-                    <div>
-                      {antecedentes.map((antecedente) => (
-                        <div key={antecedente.id} style={styles.antecedenteCard}>
-                          <button
-                            style={styles.deleteButton}
-                            onClick={() => handleDeleteAntecedente(antecedente.id)}
-                            onMouseEnter={(e) => e.target.style.backgroundColor = "#dc2626"}
-                            onMouseLeave={(e) => e.target.style.backgroundColor = "#ef4444"}
-                            title="Eliminar antecedente"
-                          >
-                            ✕
-                          </button>
-                          <div style={styles.antecedenteDate}>
-                            {formatearFecha(antecedente.fecha)}
-                          </div>
-                          <div style={styles.antecedenteDescription}>
-                            {antecedente.descripcion}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <h2 style={styles.sectionTitle}>
+                    <span style={styles.icon}>📋</span>
+                    Antecedentes Médicos
+                  </h2>
+                  <Antecedentes pacienteId={patient?.id} />
                 </div>
               </div>
             )}
 
             {activeTab === 'turnos' && (
-              <div style={styles.tabContent}>
-                <h3>Turnos</h3>
-                <p>Funcionalidad en desarrollo...</p>
+              <div>
+                <PatientAppointments pacienteId={patient?.id} />
               </div>
             )}
 
@@ -573,12 +467,6 @@ export default function PatientDetailPage() {
           </div>
         </div>
       </div>
-      {/* Modal para agregar antecedente */}
-      <ModalAgregarAntecedente
-        isOpen={showModalAntecedente}
-        onClose={() => setShowModalAntecedente(false)}
-        onAdd={handleAddAntecedente}
-      />
     </div>
   );
 }

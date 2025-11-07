@@ -1,14 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import AddAppointmentForm from '../components/turnos/AddAppointmentForm'
-
-// Datos de ejemplo
-const mockAppointments = [
-  { id: 1, date: '2025-10-20', time: '10:00', patient: 'Ana Rodríguez', reason: 'Control mensual', duration: '30 min' },
-  { id: 2, date: '2025-10-20', time: '11:30', patient: 'Pedro Gómez', reason: 'Consulta general', duration: '45 min' },
-  { id: 3, date: '2025-10-22', time: '14:00', patient: 'Marta López', reason: 'Limpieza dental', duration: '60 min' },
-]
+import { turnosAPI, patientsAPI, odontologosAPI } from '../services/api'
 
 const parseDurationToMinutes = (duration) => {
   if (duration.includes('hora')) {
@@ -19,13 +13,72 @@ const parseDurationToMinutes = (duration) => {
   return isNaN(minutes) ? 30 : minutes;
 };
 
+// Función para transformar datos del backend al formato del frontend
+const transformAppointmentFromAPI = (apiTurno) => {
+  return {
+    id: apiTurno.id,
+    date: apiTurno.fecha,
+    time: apiTurno.hora,
+    patient: `${apiTurno.paciente_nombre} ${apiTurno.paciente_apellido}`,
+    reason: apiTurno.motivo,
+    duration: apiTurno.duracion,
+    pacienteId: apiTurno.paciente,
+    odontologoId: apiTurno.odontologo,
+    odontologo: `Dr. ${apiTurno.odontologo_nombre} ${apiTurno.odontologo_apellido}`,
+    especialidad: apiTurno.especialidad
+  };
+};
 
 export const AppointmentsPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [appointments, setAppointments] = useState(mockAppointments)
+  const [appointments, setAppointments] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [isHovering, setIsHovering] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [viewMode, setViewMode] = useState('day') // 'day' o 'all'
+
+  // Cargar turnos al montar el componente
+  useEffect(() => {
+    loadAppointments();
+  }, []);
+
+  // Cargar turnos cuando cambia la fecha seleccionada en modo día
+  useEffect(() => {
+    if (viewMode === 'day') {
+      loadAppointmentsByDate(formatDate(selectedDate));
+    }
+  }, [selectedDate, viewMode]);
+
+  const loadAppointments = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const turnosData = await turnosAPI.getAll();
+      const transformedAppointments = turnosData.map(transformAppointmentFromAPI);
+      setAppointments(transformedAppointments);
+    } catch (err) {
+      console.error('Error al cargar turnos:', err);
+      setError('Error al cargar los turnos: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadAppointmentsByDate = async (fecha) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const turnosData = await turnosAPI.getByDate(fecha);
+      const transformedAppointments = turnosData.map(transformAppointmentFromAPI);
+      setAppointments(transformedAppointments);
+    } catch (err) {
+      console.error('Error al cargar turnos por fecha:', err);
+      setError('Error al cargar los turnos: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatDate = (date) => date.toISOString().split('T')[0]
   const formatDisplayDate = (dateStr) => new Date(dateStr).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -34,57 +87,79 @@ export const AppointmentsPage = () => {
     ? appointments.filter(app => app.date === formatDate(selectedDate)).sort((a, b) => a.time.localeCompare(b.time))
     : appointments.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
 
-const handleAddAppointment = (newApp) => {
+  const handleAddAppointment = async (newApp) => {
+    try {
+      // Validación de superposición de horarios (mantenemos la lógica existente)
+      const newStartTime = new Date(`${newApp.date}T${newApp.time}`);
+      const newDuration = parseDurationToMinutes(newApp.duration);
+      const newEndTime = new Date(newStartTime.getTime() + newDuration * 60000);
 
-  const newStartTime = new Date(`${newApp.date}T${newApp.time}`);
-  const newDuration = parseDurationToMinutes(newApp.duration);
-  const newEndTime = new Date(newStartTime.getTime() + newDuration * 60000);
+      const appointmentsOnSameDay = appointments.filter(app => app.date === newApp.date);
 
+      for (const existingApp of appointmentsOnSameDay) {
+        const existingStartTime = new Date(`${existingApp.date}T${existingApp.time}`);
+        const existingDuration = parseDurationToMinutes(existingApp.duration);
+        const existingEndTime = new Date(existingStartTime.getTime() + existingDuration * 60000);
+        const endHours = existingEndTime.getHours().toString().padStart(2, '0');
+        const endMinutes = existingEndTime.getMinutes().toString().padStart(2, '0');
+        const formattedEndTime = `${endHours}:${endMinutes}`;
+        const isOverlapping = (newStartTime < existingEndTime) && (newEndTime > existingStartTime);
 
-  const appointmentsOnSameDay = appointments.filter(app => app.date === newApp.date);
+        if (isOverlapping) {
+          alert(
+            `Error: El horario se pisa con el turno de ${existingApp.patient} de ${existingApp.time} a ${formattedEndTime}.`
+          );
+          return false; 
+        }
+      }
 
+      // Crear turno en el backend
+      const turnoData = {
+        fecha: newApp.date,
+        hora: newApp.time,
+        duracion: newApp.duration,
+        motivo: newApp.reason,
+        paciente: newApp.pacienteId
+        // El odontólogo se asigna automáticamente en el backend
+      };
 
-  for (const existingApp of appointmentsOnSameDay) {
-    const existingStartTime = new Date(`${existingApp.date}T${existingApp.time}`);
-    const existingDuration = parseDurationToMinutes(existingApp.duration);
-    const existingEndTime = new Date(existingStartTime.getTime() + existingDuration * 60000);
-    const endHours = existingEndTime.getHours().toString().padStart(2, '0');
-    const endMinutes = existingEndTime.getMinutes().toString().padStart(2, '0');
-    const formattedEndTime = `${endHours}:${endMinutes}`;
-    const isOverlapping = (newStartTime < existingEndTime) && (newEndTime > existingStartTime);
-
-    if (isOverlapping) {
-
-      alert(
-        `Error: El horario se pisa con el turno de ${existingApp.patient} de ${existingApp.time} a ${formattedEndTime}.`
-      );
-      return false; 
+      const createdTurno = await turnosAPI.create(turnoData);
+      const transformedAppointment = transformAppointmentFromAPI(createdTurno);
+      
+      // Actualizar estado local
+      setAppointments(prev => [...prev, transformedAppointment]);
+      
+      return true;
+    } catch (err) {
+      console.error('Error al crear turno:', err);
+      alert('Error al crear el turno: ' + err.message);
+      return false;
     }
-  }
-  if (!newApp.id) newApp.id = Date.now();
-  setAppointments(prev => [...prev, newApp]);
-  return true; 
-}
+  };
 
-  // 🔹 BORRAR TURNO
-  const handleDeleteAppointment = (id) => {
+  const handleDeleteAppointment = async (id) => {
     if (window.confirm('¿Seguro que querés borrar este turno?')) {
-      setAppointments(prev => prev.filter(app => app.id !== id))
+      try {
+        await turnosAPI.delete(id);
+        setAppointments(prev => prev.filter(app => app.id !== id));
+      } catch (err) {
+        console.error('Error al eliminar turno:', err);
+        alert('Error al eliminar el turno: ' + err.message);
+      }
     }
-  }
+  };
 
   const styles = {
-appointmentsContainer: { 
-  paddingTop: '6rem', // (Equivalente al pt-24 de Tailwind)
-  paddingBottom: '2rem', 
-  paddingLeft: '2rem', 
-  paddingRight: '2rem', 
-  backgroundColor: '#f7fafc', 
-  minHeight: '100vh', 
-  boxSizing: 'border-box' ,
-  
-  
-},    headerTitle: { fontSize: '2em', marginBottom: '1.5rem', textAlign: 'center', fontWeight: 700, },
+    appointmentsContainer: { 
+      paddingTop: '6rem',
+      paddingBottom: '2rem', 
+      paddingLeft: '2rem', 
+      paddingRight: '2rem', 
+      backgroundColor: '#f7fafc', 
+      minHeight: '100vh', 
+      boxSizing: 'border-box'
+    },
+    headerTitle: { fontSize: '2em', marginBottom: '1.5rem', textAlign: 'center', fontWeight: 700 },
     contentLayout: { display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'flex-start' },
     calendarWrapper: { flex: '1', minWidth: '350px', maxWidth: '450px' },
     dailyAppointmentsWrapper: { flex: '1', backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', minWidth: '350px', maxWidth: '450px' },
@@ -98,6 +173,8 @@ appointmentsContainer: {
     addAppointmentBtnHover: { backgroundColor: '#2f855a' },
     viewModeBtn: { padding: '0.5rem 1rem', marginRight: '0.5rem', cursor: 'pointer', borderRadius: '0.25rem', border: '1px solid #cbd5e0', backgroundColor: '#edf2f7', fontWeight: 'bold' },
     activeViewMode: { backgroundColor: '#4299e1', color: 'white' },
+    loading: { textAlign: 'center', padding: '2rem', color: '#6b7280' },
+    error: { backgroundColor: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '8px', padding: '1rem', color: '#dc2626', textAlign: 'center', marginBottom: '1rem' }
   }
 
   const modalStyles = {
@@ -110,13 +187,42 @@ appointmentsContainer: {
     return null
   }
 
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode);
+    if (mode === 'all') {
+      loadAppointments();
+    } else {
+      loadAppointmentsByDate(formatDate(selectedDate));
+    }
+  };
+
+  if (loading && appointments.length === 0) {
+    return (
+      <div style={styles.appointmentsContainer}>
+        <div style={styles.loading}>Cargando turnos...</div>
+      </div>
+    );
+  }
+
   return (
     <div style={styles.appointmentsContainer}>
       <h2 style={styles.headerTitle}>Gestión de Turnos</h2>
 
+      {error && <div style={styles.error}>{error}</div>}
+
       <div style={{ marginBottom:'1rem', textAlign:'center' }}>
-        <button style={{ ...styles.viewModeBtn, ...(viewMode==='day'?styles.activeViewMode:{}) }} onClick={()=>setViewMode('day')}>Por Día</button>
-        <button style={{ ...styles.viewModeBtn, ...(viewMode==='all'?styles.activeViewMode:{}) }} onClick={()=>setViewMode('all')}>Todos los Turnos</button>
+        <button 
+          style={{ ...styles.viewModeBtn, ...(viewMode==='day'?styles.activeViewMode:{}) }} 
+          onClick={()=>handleViewModeChange('day')}
+        >
+          Por Día
+        </button>
+        <button 
+          style={{ ...styles.viewModeBtn, ...(viewMode==='all'?styles.activeViewMode:{}) }} 
+          onClick={()=>handleViewModeChange('all')}
+        >
+          Todos los Turnos
+        </button>
       </div>
 
       <div style={styles.contentLayout}>
@@ -130,10 +236,14 @@ appointmentsContainer: {
           </h3>
 
           <div style={styles.appointmentsList}>
-            {dailyAppointments.length>0 ? (
+            {loading ? (
+              <div style={styles.loading}>Cargando...</div>
+            ) : dailyAppointments.length > 0 ? (
               dailyAppointments.map(app=>(
-                <div key={app.id || app.date+app.time} style={styles.appointmentCard}>
+                <div key={app.id} style={styles.appointmentCard}>
                   <p style={styles.cardParagraph}><strong>Paciente:</strong> {app.patient}</p>
+                  <p style={styles.cardParagraph}><strong>Odontólogo:</strong> {app.odontologo}</p>
+                  <p style={styles.cardParagraph}><strong>Especialidad:</strong> {app.especialidad}</p>
                   <p style={styles.cardParagraph}><strong>Fecha:</strong> {formatDisplayDate(app.date)}</p>
                   <p style={styles.cardParagraph}><strong>Hora:</strong> {app.time}</p>
                   <p style={styles.cardParagraph}><strong>Duración:</strong> {app.duration}</p>
