@@ -97,3 +97,79 @@ class Turno(models.Model):
     
     def __str__(self):
         return f"Turno: {self.paciente} - {self.fecha} {self.hora} con Dr. {self.odontologo}"
+    
+class EstadoTratamiento(models.Model):
+    nombre = models.CharField(max_length=50, unique=True)
+    descripcion = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        return self.nombre
+    
+    class Meta:
+        verbose_name = "Estado de Tratamiento"
+        verbose_name_plural = "Estados de Tratamiento"
+
+class Tratamiento(models.Model):
+    nombre = models.CharField(max_length=200)
+    descripcion = models.TextField()
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='tratamientos')
+    estado = models.ForeignKey(EstadoTratamiento, on_delete=models.PROTECT, default=1)
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField(blank=True, null=True)
+    duracion_estimada = models.PositiveIntegerField(help_text="Duración estimada en meses")
+    odontologo = models.ForeignKey('odontologos.Odontologo', on_delete=models.CASCADE, related_name='tratamientos')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.nombre} - {self.paciente.nombre} {self.paciente.apellido}"
+    
+    class Meta:
+        verbose_name = "Tratamiento"
+        verbose_name_plural = "Tratamientos"
+        ordering = ['-created_at']
+
+class Odontograma(models.Model):
+    paciente = models.OneToOneField(Paciente, on_delete=models.CASCADE, related_name='odontograma')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Odontograma de {self.paciente.nombre} {self.paciente.apellido}"
+    
+    class Meta:
+        verbose_name = "Odontograma"
+        verbose_name_plural = "Odontogramas"
+
+class OdontogramaDatos(models.Model):
+    SUPERFICIE_CHOICES = [
+        (1, 'Oclusal/Incisal'),
+        (2, 'Mesial'),
+        (3, 'Distal'), 
+        (4, 'Vestibular'),
+        (5, 'Lingual/Palatina')
+    ]
+    
+    COLOR_CHOICES = [
+        ('blanco', 'Sano'),
+        ('rojo', 'Caries'),
+        ('verde', 'Sellante'),
+        ('gris', 'Amalgama'),
+        ('azul', 'Composite'),
+        ('negro', 'Extracción Indicada')
+    ]
+    
+    odontograma = models.ForeignKey(Odontograma, on_delete=models.CASCADE, related_name='datos')
+    fdi = models.IntegerField()  # Número FDI del diente (11-48)
+    superficie = models.IntegerField(choices=SUPERFICIE_CHOICES)
+    color_codigo = models.CharField(max_length=10, choices=COLOR_CHOICES, default='blanco')
+    
+    def __str__(self):
+        return f"Diente {self.fdi} - Superficie {self.get_superficie_display()} - {self.get_color_codigo_display()}"
+    
+    class Meta:
+        verbose_name = "Datos del Odontograma"
+        verbose_name_plural = "Datos de Odontogramas"
+        unique_together = ['odontograma', 'fdi', 'superficie']
+        ordering = ['fdi', 'superficie']

@@ -5,6 +5,7 @@ import { calcularEdad, formatearFecha } from "../utils/dateUtils";
 import Odontograma from "../components/componentspacieantes/Odontograma";
 import Antecedentes from "../components/componentspacieantes/Antecedentes";
 import PatientAppointments from "../components/turnos/PatientAppointments";
+import VistaPreviaTratamiento from "../components/tratamiento/VIstaPreviaTratamiento";
 
 export default function PatientDetailPage() {
   const { id } = useParams();
@@ -436,7 +437,7 @@ export default function PatientDetailPage() {
             {/* Contenido de otros tabs */}
             {activeTab === 'odontograma' && (
               <div>
-                <Odontograma />
+                <Odontograma pacienteId={patient?.id} />
               </div>
             )}
 
@@ -459,9 +460,8 @@ export default function PatientDetailPage() {
             )}
 
             {activeTab === 'tratamientos' && (
-              <div style={styles.tabContent}>
-                <h3>Tratamientos</h3>
-                <p>Funcionalidad en desarrollo...</p>
+              <div>
+                <VistaPreviaTratamiento pacienteId={patient?.id} />
               </div>
             )}
           </div>

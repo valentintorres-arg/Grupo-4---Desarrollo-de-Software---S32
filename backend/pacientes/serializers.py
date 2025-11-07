@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Paciente, ObraSocial, Antecedente, EntradaAntecedente, Turno
+from .models import Paciente, ObraSocial, Antecedente, EntradaAntecedente, Turno, EstadoTratamiento, Tratamiento, Odontograma, OdontogramaDatos
 
 class ObraSocialSerializer(serializers.ModelSerializer):
     class Meta:
@@ -103,3 +103,65 @@ class TurnoSerializer(serializers.ModelSerializer):
                 })
         
         return data
+    
+class EstadoTratamientoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EstadoTratamiento
+        fields = ['id', 'nombre', 'descripcion']
+
+class TratamientoSerializer(serializers.ModelSerializer):
+    paciente_nombre = serializers.CharField(source='paciente.nombre', read_only=True)
+    paciente_apellido = serializers.CharField(source='paciente.apellido', read_only=True)
+    paciente_dni = serializers.CharField(source='paciente.dni', read_only=True)
+    estado_nombre = serializers.CharField(source='estado.nombre', read_only=True)
+    odontologo_nombre = serializers.CharField(source='odontologo.nombre', read_only=True)
+    odontologo_apellido = serializers.CharField(source='odontologo.apellido', read_only=True)
+    odontologo_matricula = serializers.CharField(source='odontologo.matricula', read_only=True)
+    
+    class Meta:
+        model = Tratamiento
+        fields = [
+            'id', 'nombre', 'descripcion', 'paciente', 'estado', 'fecha_inicio', 
+            'fecha_fin', 'duracion_estimada', 'odontologo', 'created_at', 'updated_at',
+            'paciente_nombre', 'paciente_apellido', 'paciente_dni', 'estado_nombre',
+            'odontologo_nombre', 'odontologo_apellido', 'odontologo_matricula'
+        ]
+        read_only_fields = ['created_at', 'updated_at']
+        
+    def validate_fecha_inicio(self, value):
+        from datetime import date
+        # Solo validar fecha futura en creaciones, no en actualizaciones
+        if not self.instance and value > date.today():
+            from rest_framework import serializers
+            raise serializers.ValidationError("La fecha de inicio no puede ser futura.")
+        return value
+        
+    def validate(self, attrs):
+        # En actualizaciones, si no se proporciona odontologo, usar el existente
+        if self.instance and 'odontologo' not in attrs:
+            attrs['odontologo'] = self.instance.odontologo
+        return attrs
+
+class OdontogramaDatosSerializer(serializers.ModelSerializer):
+    superficie_display = serializers.CharField(source='get_superficie_display', read_only=True)
+    color_display = serializers.CharField(source='get_color_codigo_display', read_only=True)
+    
+    class Meta:
+        model = OdontogramaDatos
+        fields = [
+            'id', 'fdi', 'superficie', 'superficie_display', 
+            'color_codigo', 'color_display'
+        ]
+
+class OdontogramaSerializer(serializers.ModelSerializer):
+    datos = OdontogramaDatosSerializer(many=True, read_only=True)
+    paciente_nombre = serializers.CharField(source='paciente.nombre', read_only=True)
+    paciente_apellido = serializers.CharField(source='paciente.apellido', read_only=True)
+    
+    class Meta:
+        model = Odontograma
+        fields = [
+            'id', 'paciente', 'created_at', 'updated_at',
+            'paciente_nombre', 'paciente_apellido', 'datos'
+        ]
+        read_only_fields = ['created_at', 'updated_at']

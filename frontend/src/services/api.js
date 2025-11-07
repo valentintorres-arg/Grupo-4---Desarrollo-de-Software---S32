@@ -24,7 +24,17 @@ const apiRequest = async (endpoint, options = {}) => {
         }
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            let errorMessage = `HTTP error! status: ${response.status}`;
+            try {
+                const errorBody = await response.text();
+                console.error('Error response body:', errorBody);
+                if (errorBody) {
+                    errorMessage += ` - ${errorBody}`;
+                }
+            } catch (e) {
+                console.error('Could not parse error response:', e);
+            }
+            throw new Error(errorMessage);
         }
 
         return response;
@@ -191,5 +201,183 @@ export const especialidadesAPI = {
     getAll: async () => {
         const response = await apiRequest('/odontologos/especialidades/');
         return response.json();
+    }
+};
+
+export const tratamientosAPI = {
+    getAll: async () => {
+        const response = await apiRequest('/api/tratamientos/');
+        return response.json();
+    },
+
+    getById: async (id) => {
+        const response = await apiRequest(`/api/tratamientos/${id}/`);
+        return response.json();
+    },
+
+    getByPatient: async (patientId) => {
+        const response = await apiRequest(`/api/tratamientos/?paciente=${patientId}`);
+        return response.json();
+    },
+
+    getByOdontologo: async (odontologoId) => {
+        const response = await apiRequest(`/api/tratamientos/?odontologo=${odontologoId}`);
+        return response.json();
+    },
+
+    getByEstado: async (estadoId) => {
+        const response = await apiRequest(`/api/tratamientos/?estado=${estadoId}`);
+        return response.json();
+    },
+
+    create: async (tratamientoData) => {
+        const response = await apiRequest('/api/tratamientos/', {
+            method: 'POST',
+            body: JSON.stringify(tratamientoData),
+        });
+        return response.json();
+    },
+
+    update: async (id, tratamientoData) => {
+        const response = await apiRequest(`/api/tratamientos/${id}/`, {
+            method: 'PATCH', // Usar PATCH para actualizaciones parciales
+            body: JSON.stringify(tratamientoData),
+        });
+        return response.json();
+    },
+
+    delete: async (id) => {
+        const response = await apiRequest(`/api/tratamientos/${id}/`, {
+            method: 'DELETE',
+        });
+        return response.ok;
+    },
+
+    finalizar: async (id, fechaFin) => {
+        const response = await apiRequest(`/api/tratamientos/${id}/finalizar/`, {
+            method: 'PATCH',
+            body: JSON.stringify({ fecha_fin: fechaFin }),
+        });
+        return response.json();
+    }
+};
+
+export const estadosTratamientoAPI = {
+    getAll: async () => {
+        const response = await apiRequest('/api/estados-tratamiento/');
+        return response.json();
+    },
+
+    getById: async (id) => {
+        const response = await apiRequest(`/api/estados-tratamiento/${id}/`);
+        return response.json();
+    }
+};
+
+export const odontogramaAPI = {
+    // Obtener odontograma por paciente (crea uno vacío si no existe)
+    getByPatient: async (patientId) => {
+        const response = await apiRequest(`/api/odontogramas/por_paciente/?paciente_id=${patientId}`);
+        return response.json();
+    },
+
+    // Obtener odontograma completo por ID
+    getById: async (id) => {
+        const response = await apiRequest(`/api/odontogramas/${id}/`);
+        return response.json();
+    },
+
+    // Actualizar una superficie específica de un diente
+    updateSuperficie: async (odontogramaId, fdi, superficie, colorCodigo) => {
+        const response = await apiRequest(`/api/odontogramas/${odontogramaId}/actualizar_superficie/`, {
+            method: 'POST',
+            body: JSON.stringify({
+                fdi: fdi,
+                superficie: superficie,
+                color_codigo: colorCodigo
+            }),
+        });
+        return response.json();
+    },
+
+    // Guardar odontograma completo (solo datos modificados)
+    save: async (patientId, datosModificados) => {
+        // Solo enviamos superficies que NO sean blancas (sanas)
+        const datosFiltrados = datosModificados.filter(dato => dato.color_codigo !== 'blanco');
+        
+        const response = await apiRequest(`/api/odontogramas/por_paciente/`, {
+            method: 'POST',
+            body: JSON.stringify({
+                paciente_id: patientId,
+                datos: datosFiltrados
+            }),
+        });
+        return response.json();
+    },
+
+    // Resetear diente completo a sano (elimina todos sus datos)
+    resetDiente: async (patientId, fdi) => {
+        // Primero obtenemos el odontograma
+        const odontograma = await odontogramaAPI.getByPatient(patientId);
+        
+        // Filtramos todos los datos de este diente
+        const datosActuales = odontograma.datos || [];
+        const datosSinDiente = datosActuales.filter(dato => dato.fdi !== fdi);
+        
+        // Guardamos sin este diente (vuelve a ser todo blanco/sano)
+        return await odontogramaAPI.save(patientId, datosSinDiente);
+    },
+
+    // Obtener estado de una superficie específica
+    getSuperficieEstado: (odontograma, fdi, superficie) => {
+        if (!odontograma || !odontograma.datos) return 'blanco'; // Default sano
+        
+        const dato = odontograma.datos.find(d => d.fdi === fdi && d.superficie === superficie);
+        return dato ? dato.color_codigo : 'blanco'; // Si no existe, es sano
+    },
+
+    // Obtener todos los estados de un diente
+    getDienteEstados: (odontograma, fdi) => {
+        const estados = {
+            1: 'blanco', // Oclusal/Incisal
+            2: 'blanco', // Mesial  
+            3: 'blanco', // Distal
+            4: 'blanco', // Vestibular
+            5: 'blanco'  // Lingual
+        };
+
+        if (odontograma && odontograma.datos) {
+            odontograma.datos
+                .filter(dato => dato.fdi === fdi)
+                .forEach(dato => {
+                    estados[dato.superficie] = dato.color_codigo;
+                });
+        }
+
+        return estados;
+    },
+
+    // Construir datos para enviar al backend
+    buildDatosModificados: (odontogramaLocal) => {
+        const datos = [];
+        
+        Object.keys(odontogramaLocal).forEach(fdi => {
+            const dienteEstados = odontogramaLocal[fdi];
+            
+            Object.keys(dienteEstados).forEach(superficie => {
+                const color = dienteEstados[superficie];
+                
+                // Solo agregar si NO es blanco (sano)
+                if (color && color !== 'blanco') {
+                    datos.push({
+                        fdi: parseInt(fdi),
+                        superficie: parseInt(superficie),
+                        color_codigo: color
+                    });
+                }
+            });
+        });
+        
+        return datos;
     }
 };

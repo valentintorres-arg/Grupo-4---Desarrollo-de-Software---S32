@@ -111,7 +111,15 @@ logoutBtn: {
   const handleHover = (e, isHovering) => {
     Object.assign(
       e.target.style,
-      isHovering ? styles.btnHover : { background: "#0e1a3a" }
+      isHovering 
+        ? { 
+            background: "#1e293b",
+            border: "1px solid rgba(148,163,184,.25)"
+          }
+        : { 
+            background: "#0e1a3a",
+            border: "1px solid rgba(148,163,184,.25)"
+          }
     );
   };
 
@@ -151,7 +159,13 @@ logoutBtn: {
         </button>
        
         <button
-          style={{ ...styles.btn, ...styles.btnPrimary }}
+          style={{
+            ...styles.btn,
+            border: "1px solid rgba(148,163,184,.25)",
+            outline: "none"
+          }}
+          onMouseEnter={(e) => handleHover(e, true)}
+          onMouseLeave={(e) => handleHover(e, false)}
           onClick={() => navigate("/register")}
         >
           Registrar Tratamiento
