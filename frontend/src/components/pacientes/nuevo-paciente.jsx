@@ -26,7 +26,7 @@ export default function NuevoPacientePage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -44,28 +44,27 @@ export default function NuevoPacientePage() {
       }
 
       if (!validarFechaNacimiento(form.fecha_nacimiento)) {
-        throw new Error("La fecha de nacimiento debe ser anterior a hoy")
+        throw new Error("La fecha de nacimiento debe ser anterior a hoy");
       }
 
       const patientData = {
         dni: parseInt(form.dni),
-        nombre: form.nombre?.trim() || '',
-        apellido: form.apellido?.trim() || '',
+        nombre: form.nombre?.trim() || "",
+        apellido: form.apellido?.trim() || "",
         fecha_nacimiento: form.fecha_nacimiento,
         genero: form.genero,
-        email: form.email?.trim() || '',
-        telefono: form.telefono?.trim() || '',
-        direccion: form.direccion?.trim() || '',
-        numeroOS: form.numeroOS?.trim() || '',
+        email: form.email?.trim() || "",
+        telefono: form.telefono?.trim() || "",
+        direccion: form.direccion?.trim() || "",
+        numeroOS: form.numeroOS?.trim() || "",
         obraSocial: parseInt(form.obraSocial),
-        contacto_emergencia_nombre: form.contacto_emergencia_nombre?.trim() || '',
-        contacto_emergencia_relacion: form.contacto_emergencia_relacion?.trim() || '',
-        contacto_emergencia_telefono: form.contacto_emergencia_telefono?.trim() || '',
+        contacto_emergencia_nombre: form.contacto_emergencia_nombre?.trim() || "",
+        contacto_emergencia_relacion: form.contacto_emergencia_relacion?.trim() || "",
+        contacto_emergencia_telefono: form.contacto_emergencia_telefono?.trim() || "",
       };
 
       await createPatient(patientData);
       navigate("/patients");
-
     } catch (err) {
       console.error("Error al crear paciente:", err);
       setError(err.message || "Error al crear el paciente");
@@ -74,49 +73,158 @@ export default function NuevoPacientePage() {
     }
   };
 
-  const styles = {
-    container: "min-h-screen bg-gray-100 p-6",
-    innerContainer: "max-w-5xl mx-auto",
-    title: "text-3xl font-bold mb-6 text-gray-800",
-    form: "bg-white p-8 rounded-lg shadow-md",
-    section: "space-y-4 mb-8",
-    sectionTitle: "text-xl font-semibold text-gray-700 mb-4",
-    input: "w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400",
-    textarea: "w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 min-h-[100px]",
-    select: "w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400",
-    submitButtonContainer: "flex justify-end gap-4 mt-8",
-    submitButton: "bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition text-white px-8 py-3 rounded-lg font-semibold",
-    cancelButton: "bg-gray-500 hover:bg-gray-600 transition text-white px-8 py-3 rounded-lg font-semibold",
-    error: "bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6",
-    loading: "text-gray-600 text-center py-4",
-    grid: "grid gap-6 md:grid-cols-2",
-    gridFull: "md:col-span-2",
-    ageDisplay: "text-sm text-gray-600 mt-1",
-  };
-
   return (
-    <div className={styles.container}>
-      <div className={styles.innerContainer}>
-        <h2 className={styles.title}>Registrar Nuevo Paciente</h2>
+    <div className="nuevo-container">
+      <style>
+        {`
+          .nuevo-container {
+            min-height: 100vh;
+            background-color: #f3f4f6;
+            padding: 1.5rem;
+            margin-top: 5rem;
+          }
 
-        {error && (
-          <div className={styles.error}>
-            {error}
-          </div>
-        )}
+          .nuevo-inner-container {
+            max-width: 80rem;
+            margin: 0 auto;
+          }
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+          .nuevo-title {
+            text-align: center; /* centrado del título */
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+          }
+
+          .nuevo-form {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          }
+
+          .nuevo-section {
+            margin-bottom: 2rem;
+          }
+
+          .nuevo-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+          }
+
+          .nuevo-input,
+          .nuevo-select,
+          .nuevo-textarea {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+          }
+
+          .nuevo-input:focus,
+          .nuevo-select:focus,
+          .nuevo-textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+          }
+
+          .nuevo-textarea {
+            min-height: 100px;
+          }
+
+          .nuevo-grid {
+            display: grid;
+            gap: 1.5rem;
+          }
+
+          @media (min-width: 768px) {
+            .nuevo-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+
+          .nuevo-grid-full {
+            grid-column: span 2;
+          }
+
+          .nuevo-age-display {
+            font-size: 0.875rem;
+            color: #4b5563;
+            margin-top: 0.25rem;
+          }
+
+          .nuevo-error {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+          }
+
+          .nuevo-submit-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+          }
+
+          .nuevo-submit {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+          }
+
+          .nuevo-submit:hover {
+            background-color: #1e40af;
+          }
+
+          .nuevo-cancel {
+            background-color: #6b7280;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+          }
+
+          .nuevo-cancel:hover {
+            background-color: #4b5563;
+          }
+
+          .nuevo-submit:disabled,
+          .nuevo-cancel:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+          }
+        `}
+      </style>
+
+      <div className="nuevo-inner-container">
+        <h2 className="nuevo-title">Registrar Nuevo Paciente</h2>
+
+        {error && <div className="nuevo-error">{error}</div>}
+
+        <form onSubmit={handleSubmit} className="nuevo-form">
           {/* Información Personal */}
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Información Personal</h3>
-            <div className={styles.grid}>
+          <div className="nuevo-section">
+            <h3 className="nuevo-section-title">Información Personal</h3>
+            <div className="nuevo-grid">
               <input
                 type="text"
                 name="dni"
                 placeholder="DNI (sin puntos ni espacios)"
                 value={form.dni}
                 onChange={handleChange}
-                className={styles.input}
+                className="nuevo-input"
                 required
                 pattern="[0-9]{7,8}"
                 title="Ingrese un DNI válido de 7 u 8 dígitos"
@@ -127,12 +235,12 @@ export default function NuevoPacientePage() {
                   name="fecha_nacimiento"
                   value={form.fecha_nacimiento}
                   onChange={handleChange}
-                  className={styles.input}
+                  className="nuevo-input"
                   required
-                  max={new Date().toISOString().split('T')[0]}
+                  max={new Date().toISOString().split("T")[0]}
                 />
                 {form.fecha_nacimiento && (
-                  <div className={styles.ageDisplay}>
+                  <div className="nuevo-age-display">
                     Edad: {calcularEdad(form.fecha_nacimiento)} años
                   </div>
                 )}
@@ -141,7 +249,7 @@ export default function NuevoPacientePage() {
                 name="genero"
                 value={form.genero}
                 onChange={handleChange}
-                className={styles.select}
+                className="nuevo-select"
                 required
               >
                 <option value="">Seleccionar Género</option>
@@ -156,7 +264,7 @@ export default function NuevoPacientePage() {
                 placeholder="Nombre"
                 value={form.nombre}
                 onChange={handleChange}
-                className={styles.input}
+                className="nuevo-input"
                 required
               />
               <input
@@ -165,7 +273,7 @@ export default function NuevoPacientePage() {
                 placeholder="Apellido"
                 value={form.apellido}
                 onChange={handleChange}
-                className={styles.input}
+                className="nuevo-input"
                 required
               />
               <input
@@ -174,7 +282,7 @@ export default function NuevoPacientePage() {
                 placeholder="Email"
                 value={form.email}
                 onChange={handleChange}
-                className={styles.input}
+                className="nuevo-input"
                 required
               />
               <input
@@ -183,29 +291,29 @@ export default function NuevoPacientePage() {
                 placeholder="Teléfono (ej: +54 11 1234-5678)"
                 value={form.telefono}
                 onChange={handleChange}
-                className={styles.input}
+                className="nuevo-input"
               />
-              <div className={styles.gridFull}>
+              <div className="nuevo-grid-full">
                 <textarea
                   name="direccion"
                   placeholder="Dirección completa"
                   value={form.direccion}
                   onChange={handleChange}
-                  className={styles.textarea}
+                  className="nuevo-textarea"
                 />
               </div>
             </div>
           </div>
 
-          {/* Información de Obra Social */}
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Obra Social</h3>
-            <div className={styles.grid}>
+          {/* Obra Social */}
+          <div className="nuevo-section">
+            <h3 className="nuevo-section-title">Obra Social</h3>
+            <div className="nuevo-grid">
               <select
                 name="obraSocial"
                 value={form.obraSocial}
                 onChange={handleChange}
-                className={styles.select}
+                className="nuevo-select"
                 required
               >
                 <option value="">Seleccionar Obra Social</option>
@@ -221,23 +329,23 @@ export default function NuevoPacientePage() {
                 placeholder="Número de Socio"
                 value={form.numeroOS}
                 onChange={handleChange}
-                className={styles.input}
+                className="nuevo-input"
                 required
               />
             </div>
           </div>
 
           {/* Contacto de Emergencia */}
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Contacto de Emergencia</h3>
-            <div className={styles.grid}>
+          <div className="nuevo-section">
+            <h3 className="nuevo-section-title">Contacto de Emergencia</h3>
+            <div className="nuevo-grid">
               <input
                 type="text"
                 name="contacto_emergencia_nombre"
                 placeholder="Nombre completo"
                 value={form.contacto_emergencia_nombre}
                 onChange={handleChange}
-                className={styles.input}
+                className="nuevo-input"
               />
               <input
                 type="text"
@@ -245,7 +353,7 @@ export default function NuevoPacientePage() {
                 placeholder="Relación (ej: Madre, Padre, Cónyuge)"
                 value={form.contacto_emergencia_relacion}
                 onChange={handleChange}
-                className={styles.input}
+                className="nuevo-input"
               />
               <input
                 type="tel"
@@ -253,24 +361,24 @@ export default function NuevoPacientePage() {
                 placeholder="Teléfono de emergencia"
                 value={form.contacto_emergencia_telefono}
                 onChange={handleChange}
-                className={styles.input}
+                className="nuevo-input"
               />
             </div>
           </div>
 
-          {/* Botón de Guardar */}
-          <div className={styles.submitButtonContainer}>
-            <button 
-              type="button" 
+          {/* Botones */}
+          <div className="nuevo-submit-buttons">
+            <button
+              type="button"
               onClick={() => navigate("/patients")}
-              className={styles.cancelButton}
+              className="nuevo-cancel"
               disabled={isSubmitting}
             >
               Cancelar
             </button>
-            <button 
-              type="submit" 
-              className={styles.submitButton}
+            <button
+              type="submit"
+              className="nuevo-submit"
               disabled={isSubmitting || loading}
             >
               {isSubmitting ? "Guardando..." : "Agregar Paciente"}

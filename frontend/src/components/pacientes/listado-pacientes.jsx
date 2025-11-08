@@ -33,6 +33,7 @@ export default function PatientsListPage() {
       fontSize: "2rem",
       fontWeight: 700,
       marginBottom: "20px",
+      marginTop:"30px",
     },
     searchContainer: {
       display: "flex",

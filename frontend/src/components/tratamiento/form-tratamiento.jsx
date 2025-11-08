@@ -6,7 +6,7 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
     nombre: "",
     descripcion: "",
     paciente: pacienteId || "",
-    estado: 1, // ID 1 para "Programado" por defecto
+    estado: 1,
     fecha_inicio: "",
     duracion_estimada: ""
   });
@@ -24,7 +24,6 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
   }, []);
 
   useEffect(() => {
-    // Filtrar pacientes por DNI o nombre cuando se busca
     if (searchDni.trim()) {
       const filtered = pacientes.filter(paciente =>
         paciente.dni.toString().includes(searchDni) ||
@@ -39,10 +38,9 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
   }, [searchDni, pacientes]);
 
   useEffect(() => {
-    // Click fuera del dropdown
     const handleClickOutside = () => setShowDropdown(false);
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const loadPacientes = async () => {
@@ -50,8 +48,8 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
       const pacientesData = await patientsAPI.getAll();
       setPacientes(pacientesData);
     } catch (err) {
-      console.error('Error al cargar pacientes:', err);
-      setError('Error al cargar lista de pacientes');
+      console.error("Error al cargar pacientes:", err);
+      setError("Error al cargar lista de pacientes");
     }
   };
 
@@ -85,33 +83,53 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
       };
 
       const nuevoTratamiento = await tratamientosAPI.create(tratamientoData);
-      
-      setSuccess('Tratamiento registrado exitosamente');
-      
-      // Reset form
+
+      setSuccess("Tratamiento registrado exitosamente");
       setFormulario({
         nombre: "",
         descripcion: "",
         paciente: pacienteId || "",
-        estado: 1, // Mantener "Programado" por defecto
+        estado: 1,
         fecha_inicio: "",
         duracion_estimada: ""
       });
       setSearchDni("");
 
-      if (onTratamientoCreated) {
-        onTratamientoCreated(nuevoTratamiento);
-      }
+      if (onTratamientoCreated) onTratamientoCreated(nuevoTratamiento);
 
     } catch (err) {
-      console.error('Error al crear tratamiento:', err);
-      setError('Error al registrar el tratamiento: ' + err.message);
+      console.error("Error al crear tratamiento:", err);
+      setError("Error al registrar el tratamiento: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
   const styles = {
+    container: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "100vh",
+      backgroundColor: "#f9fafb",
+      padding: "40px"
+    },
+    header: {
+      textAlign: "center",
+      marginBottom: "30px"
+    },
+    headerTitle: {
+      fontSize: "1.8rem",
+      fontWeight: "700",
+      color: "#1f2937",
+      marginBottom: "8px",
+      marginTop: '1.5rem'
+    },
+    headerSubtitle: {
+      fontSize: "1rem",
+      color: "#6b7280"
+    },
     form: {
       backgroundColor: "#ffffff",
       boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
@@ -125,12 +143,10 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
       fontSize: "1.5rem",
       fontWeight: "600",
       color: "#374151",
-      marginBottom: "24px",
+      marginBottom: "30px",
       textAlign: "center"
     },
-    inputGroup: {
-      marginBottom: "20px",
-    },
+    inputGroup: { marginBottom: "20px" },
     label: {
       display: "block",
       fontSize: "14px",
@@ -157,15 +173,6 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
       outline: "none",
       resize: "vertical",
       minHeight: "100px"
-    },
-    select: {
-      width: "100%",
-      border: "1px solid #d1d5db",
-      padding: "12px 16px",
-      borderRadius: "8px",
-      fontSize: "14px",
-      backgroundColor: "#fff",
-      outline: "none"
     },
     button: {
       backgroundColor: "#3b82f6",
@@ -201,9 +208,7 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
       fontSize: "14px",
       marginBottom: "16px"
     },
-    searchContainer: {
-      position: "relative"
-    },
+    searchContainer: { position: "relative" },
     dropdown: {
       position: "absolute",
       top: "100%",
@@ -222,130 +227,122 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
       cursor: "pointer",
       borderBottom: "1px solid #f3f4f6",
       transition: "background-color 0.2s ease"
-    },
-    dropdownItemHover: {
-      backgroundColor: "#f9fafb"
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={styles.form}>
-      <h2 style={styles.title}>Registrar Nuevo Tratamiento</h2>
+    <div style={styles.container}>
+      <header style={styles.header}>
+        <h2 style={styles.headerTitle}>Registrar Tratamiento</h2>
+        <p style={styles.headerSubtitle}>
+          Completá los datos del tratamiento para vincularlo a un paciente.
+        </p>
+      </header>
 
-      {error && <div style={styles.error}>{error}</div>}
-      {success && <div style={styles.success}>{success}</div>}
+      <form onSubmit={handleSubmit} style={styles.form}>
+        {error && <div style={styles.error}>{error}</div>}
+        {success && <div style={styles.success}>{success}</div>}
 
-      {/* Nombre del tratamiento */}
-      <div style={styles.inputGroup}>
-        <label style={styles.label}>Nombre del Tratamiento *</label>
-        <input
-          type="text"
-          name="nombre"
-          value={formulario.nombre}
-          onChange={handleInputChange}
-          style={styles.input}
-          placeholder="Ej: Ortodoncia, Limpieza dental, etc."
-          required
-        />
-      </div>
-
-      {/* Búsqueda de paciente (solo si no se pasa pacienteId) */}
-      {!pacienteId && (
         <div style={styles.inputGroup}>
-          <label style={styles.label}>Buscar Paciente por DNI *</label>
-          <div style={styles.searchContainer} onClick={e => e.stopPropagation()}>
-            <input
-              type="text"
-              value={searchDni}
-              onChange={handleSearchDni}
-              style={styles.input}
-              placeholder="Ingrese DNI o nombre del paciente"
-              required={!formulario.paciente}
-            />
-            {showDropdown && (
-              <div style={styles.dropdown}>
-                {filteredPacientes.map((paciente) => (
-                  <div
-                    key={paciente.id}
-                    style={styles.dropdownItem}
-                    onClick={() => selectPaciente(paciente)}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = "#f9fafb"}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = "#fff"}
-                  >
-                    <div style={{ fontWeight: "500" }}>
-                      {paciente.nombre} {paciente.apellido}
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                      DNI: {paciente.dni}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <label style={styles.label}>Nombre del Tratamiento *</label>
+          <input
+            type="text"
+            name="nombre"
+            value={formulario.nombre}
+            onChange={handleInputChange}
+            style={styles.input}
+            placeholder="Ej: Ortodoncia, Limpieza dental, etc."
+            required
+          />
         </div>
-      )}
 
-      {/* Estado - Campo oculto, siempre "Programado" por defecto */}
-      <input
-        type="hidden"
-        name="estado"
-        value={formulario.estado}
-      />
+        {!pacienteId && (
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Buscar Paciente por DNI *</label>
+            <div style={styles.searchContainer} onClick={e => e.stopPropagation()}>
+              <input
+                type="text"
+                value={searchDni}
+                onChange={handleSearchDni}
+                style={styles.input}
+                placeholder="Ingrese DNI o nombre del paciente"
+                required={!formulario.paciente}
+              />
+              {showDropdown && (
+                <div style={styles.dropdown}>
+                  {filteredPacientes.map(paciente => (
+                    <div
+                      key={paciente.id}
+                      style={styles.dropdownItem}
+                      onClick={() => selectPaciente(paciente)}
+                      onMouseEnter={e => e.target.style.backgroundColor = "#f9fafb"}
+                      onMouseLeave={e => e.target.style.backgroundColor = "#fff"}
+                    >
+                      <div style={{ fontWeight: "500" }}>
+                        {paciente.nombre} {paciente.apellido}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                        DNI: {paciente.dni}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
-      {/* Fecha de inicio */}
-      <div style={styles.inputGroup}>
-        <label style={styles.label}>Fecha de Inicio *</label>
-        <input
-          type="date"
-          name="fecha_inicio"
-          value={formulario.fecha_inicio}
-          onChange={handleInputChange}
-          style={styles.input}
-          required
-        />
-      </div>
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Fecha de Inicio *</label>
+          <input
+            type="date"
+            name="fecha_inicio"
+            value={formulario.fecha_inicio}
+            onChange={handleInputChange}
+            style={styles.input}
+            required
+          />
+        </div>
 
-      {/* Duración estimada */}
-      <div style={styles.inputGroup}>
-        <label style={styles.label}>Duración Estimada (meses) *</label>
-        <input
-          type="number"
-          name="duracion_estimada"
-          value={formulario.duracion_estimada}
-          onChange={handleInputChange}
-          style={styles.input}
-          placeholder="Ej: 6, 12, 24"
-          min="1"
-          required
-        />
-      </div>
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Duración Estimada (meses) *</label>
+          <input
+            type="number"
+            name="duracion_estimada"
+            value={formulario.duracion_estimada}
+            onChange={handleInputChange}
+            style={styles.input}
+            placeholder="Ej: 6, 12, 24"
+            min="1"
+            required
+          />
+        </div>
 
-      {/* Descripción */}
-      <div style={styles.inputGroup}>
-        <label style={styles.label}>Descripción del Tratamiento *</label>
-        <textarea
-          name="descripcion"
-          value={formulario.descripcion}
-          onChange={handleInputChange}
-          style={styles.textarea}
-          placeholder="Describe detalladamente el tratamiento a realizar..."
-          required
-        />
-      </div>
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Descripción del Tratamiento *</label>
+          <textarea
+            name="descripcion"
+            value={formulario.descripcion}
+            onChange={handleInputChange}
+            style={styles.textarea}
+            placeholder="Describe detalladamente el tratamiento a realizar..."
+            required
+          />
+        </div>
 
-      <button 
-        type="submit" 
-        style={{
-          ...styles.button,
-          ...(loading ? styles.buttonDisabled : {}),
-        }}
-        disabled={loading}
-        onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = "#2563eb")}
-        onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = "#3b82f6")}
-      >
-        {loading ? 'Registrando...' : 'Registrar Tratamiento'}
-      </button>
-    </form>
+        <button
+          type="submit"
+          style={{
+            ...styles.button,
+            ...(loading ? styles.buttonDisabled : {})
+          }}
+          disabled={loading}
+          onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = "#2563eb")}
+          onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = "#3b82f6")}
+        >
+          {loading ? "Registrando..." : "Registrar Tratamiento"}
+        </button>
+      </form>
+    </div>
   );
 }

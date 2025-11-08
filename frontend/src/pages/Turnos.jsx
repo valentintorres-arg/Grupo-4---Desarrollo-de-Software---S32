@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import  { useState, useEffect } from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import AddAppointmentForm from '../components/turnos/agregar-turno'
-import { turnosAPI, patientsAPI, odontologosAPI } from '../services/api'
+import { turnosAPI } from '../services/api'
 
 const parseDurationToMinutes = (duration) => {
   if (duration.includes('hora')) {
@@ -170,8 +170,9 @@ export const AppointmentsPage = () => {
       backgroundColor: '#f7fafc', 
       minHeight: '100vh', 
       boxSizing: 'border-box'
+      
     },
-    headerTitle: { fontSize: '2em', marginBottom: '1.5rem', textAlign: 'center', fontWeight: 700 },
+    headerTitle: { fontSize: '2em', marginBottom: '3rem', textAlign: 'center', fontWeight: 700, marginTop: '1.5rem' },
     contentLayout: { display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'flex-start' },
     calendarWrapper: { flex: '1', minWidth: '350px', maxWidth: '450px' },
     dailyAppointmentsWrapper: { flex: '1', backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', minWidth: '350px', maxWidth: '450px' },
