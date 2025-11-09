@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ObraSocial, EstadoTratamiento, Tratamiento, Paciente, Antecedente, EntradaAntecedente, Turno, Odontograma, OdontogramaDatos
+from .models import ObraSocial, EstadoTratamiento, Tratamiento, Paciente, Antecedente, EntradaAntecedente, Turno, Odontograma, OdontogramaDatos, Evolucion
 
 # Register your models here.
 
@@ -86,3 +86,14 @@ class OdontogramaDatosAdmin(admin.ModelAdmin):
     def get_color_codigo_display(self, obj):
         return obj.get_color_codigo_display()
     get_color_codigo_display.short_description = 'Estado'
+
+@admin.register(Evolucion)
+class EvolucionAdmin(admin.ModelAdmin):
+    list_display = ('tratamiento', 'fecha', 'tiene_imagen')
+    list_filter = ('fecha',)
+    search_fields = ('tratamiento__paciente__nombre', 'tratamiento__paciente__apellido', 'descripcion')
+
+    def tiene_imagen(self, obj):
+        return bool(obj.imagen)
+    tiene_imagen.boolean = True
+    tiene_imagen.short_description = '¿Tiene Imagen?'
