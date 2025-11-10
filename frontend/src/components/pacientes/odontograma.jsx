@@ -22,8 +22,16 @@ const SUPERFICIE_MAPPING = {
 
 // IDs de dientes - movido fuera del componente para evitar re-renderizado
 const dientesIds = [
-  [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28],
-  [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38],
+  // Arcada Superior - Dos filas
+  [
+    [18, 17, 16, 15, 14, 13, 12, 11], // Fila superior (cuadrante 1)
+    [21, 22, 23, 24, 25, 26, 27, 28]  // Fila inferior (cuadrante 2)
+  ],
+  // Arcada Inferior - Dos filas
+  [
+    [41, 42, 43, 44, 45, 46, 47, 48], // Fila superior (cuadrante 4)
+    [38, 37, 36, 35, 34, 33, 32, 31]  // Fila inferior (cuadrante 3)
+  ]
 ];
 
 export default function Odontograma({ pacienteId }) {
@@ -33,7 +41,7 @@ export default function Odontograma({ pacienteId }) {
   const [dientes, setDientes] = useState(() => {
     // Inicializar todos los dientes como "sanos"
     const obj = {};
-    dientesIds.flat().forEach((id) => {
+    dientesIds.flat(2).forEach((id) => {
       obj[id] = {
         arriba: "Sano",
         abajo: "Sano", 
@@ -286,106 +294,97 @@ export default function Odontograma({ pacienteId }) {
           >
             {saving ? 'Guardando...' : 'Guardar Cambios'}
           </button>
-          
-          <small style={{ 
-            fontSize: '12px', 
-            color: '#6b7280', 
-            display: 'block', 
-            textAlign: 'center',
-            lineHeight: '1.4',
-            fontStyle: 'italic'
-          }}>
-            Los cambios se guardan automáticamente al hacer clic en cada superficie
-          </small>
         </div>
       </aside>
 
       <main className="mapa">
-        {dientesIds.map((fila, i) => (
-          <div key={i} className="arcada-container">
+        {dientesIds.map((arcada, arcadaIndex) => (
+          <div key={arcadaIndex} className="arcada-container">
             <div className="arcada-label">
-              {i === 0 ? 'Arcada Superior' : 'Arcada Inferior'}
+              {arcadaIndex === 0 ? 'Arcada Superior' : 'Arcada Inferior'}
             </div>
-            <div className="fila">
-              {fila.map((id) => (
-                <div key={id} className="diente" style={{ position: 'relative' }}>
-                  <div
-                    className="sector arriba"
-                    style={{ backgroundColor: colorZona(id, "arriba") }}
-                    onClick={() => cambiarZona(id, "arriba")}
-                    title={`Diente ${id} - Vestibular: ${dientes[id]?.arriba}`}
-                  ></div>
-                  <div
-                    className="sector abajo"
-                    style={{ backgroundColor: colorZona(id, "abajo") }}
-                    onClick={() => cambiarZona(id, "abajo")}
-                    title={`Diente ${id} - Lingual: ${dientes[id]?.abajo}`}
-                  ></div>
-                  <div
-                    className="sector izquierda"
-                    style={{ backgroundColor: colorZona(id, "izquierda") }}
-                    onClick={() => cambiarZona(id, "izquierda")}
-                    title={`Diente ${id} - Mesial: ${dientes[id]?.izquierda}`}
-                  ></div>
-                  <div
-                    className="sector derecha"
-                    style={{ backgroundColor: colorZona(id, "derecha") }}
-                    onClick={() => cambiarZona(id, "derecha")}
-                    title={`Diente ${id} - Distal: ${dientes[id]?.derecha}`}
-                  ></div>
-                  <div
-                    className="sector centro"
-                    style={{ backgroundColor: colorZona(id, "centro") }}
-                    onClick={() => cambiarZona(id, "centro")}
-                    title={`Diente ${id} - Oclusal: ${dientes[id]?.centro}`}
-                  >
-                    {id}
+            {arcada.map((fila, filaIndex) => (
+              <div key={filaIndex} className="fila">
+                {fila.map((id) => (
+                  <div key={id} className="diente" style={{ position: 'relative' }}>
+                    <div
+                      className="sector arriba"
+                      style={{ backgroundColor: colorZona(id, "arriba") }}
+                      onClick={() => cambiarZona(id, "arriba")}
+                      title={`Diente ${id} - Vestibular: ${dientes[id]?.arriba}`}
+                    ></div>
+                    <div
+                      className="sector abajo"
+                      style={{ backgroundColor: colorZona(id, "abajo") }}
+                      onClick={() => cambiarZona(id, "abajo")}
+                      title={`Diente ${id} - Lingual: ${dientes[id]?.abajo}`}
+                    ></div>
+                    <div
+                      className="sector izquierda"
+                      style={{ backgroundColor: colorZona(id, "izquierda") }}
+                      onClick={() => cambiarZona(id, "izquierda")}
+                      title={`Diente ${id} - Mesial: ${dientes[id]?.izquierda}`}
+                    ></div>
+                    <div
+                      className="sector derecha"
+                      style={{ backgroundColor: colorZona(id, "derecha") }}
+                      onClick={() => cambiarZona(id, "derecha")}
+                      title={`Diente ${id} - Distal: ${dientes[id]?.derecha}`}
+                    ></div>
+                    <div
+                      className="sector centro"
+                      style={{ backgroundColor: colorZona(id, "centro") }}
+                      onClick={() => cambiarZona(id, "centro")}
+                      title={`Diente ${id} - Oclusal: ${dientes[id]?.centro}`}
+                    >
+                      {id}
+                    </div>
+                    
+                    {/* Botón para resetear diente */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        resetearDiente(id);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: '-6px',
+                        right: '-6px',
+                        width: '14px',
+                        height: '14px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        backgroundColor: 'transparent',
+                        color: '#4b5563',
+                        fontSize: '11px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        fontFamily: 'monospace',
+                        opacity: '0.7',
+                        transition: 'all 0.2s ease',
+                        lineHeight: '1'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.opacity = '1';
+                        e.target.style.color = '#dc2626';
+                        e.target.style.transform = 'scale(1.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.opacity = '0.7';
+                        e.target.style.color = '#4b5563';
+                        e.target.style.transform = 'scale(1)';
+                      }}
+                      title={`Resetear diente ${id} a sano`}
+                    >
+                      ×
+                    </button>
                   </div>
-                  
-                  {/* Botón para resetear diente */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      resetearDiente(id);
-                    }}
-                    style={{
-                      position: 'absolute',
-                      top: '-6px',
-                      right: '-6px',
-                      width: '14px',
-                      height: '14px',
-                      borderRadius: '50%',
-                      border: 'none',
-                      backgroundColor: 'transparent',
-                      color: '#4b5563',
-                      fontSize: '11px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 'bold',
-                      fontFamily: 'monospace',
-                      opacity: '0.7',
-                      transition: 'all 0.2s ease',
-                      lineHeight: '1'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.opacity = '1';
-                      e.target.style.color = '#dc2626';
-                      e.target.style.transform = 'scale(1.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.opacity = '0.7';
-                      e.target.style.color = '#4b5563';
-                      e.target.style.transform = 'scale(1)';
-                    }}
-                    title={`Resetear diente ${id} a sano`}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ))}
           </div>
         ))}
       </main>

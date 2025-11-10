@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import CASCADE
+from datetime import datetime, timedelta
 
 class ObraSocial(models.Model):
     nombre = models.CharField(max_length=55)
@@ -89,6 +90,7 @@ class Turno(models.Model):
     motivo = models.TextField()
     paciente = models.ForeignKey(Paciente, on_delete=CASCADE, related_name='turnos')
     odontologo = models.ForeignKey('odontologos.Odontologo', on_delete=CASCADE, related_name='turnos')
+    recordatorio_programado = models.BooleanField(default=False)
     
     class Meta:
         verbose_name_plural = "Turnos"
@@ -97,6 +99,46 @@ class Turno(models.Model):
     
     def __str__(self):
         return f"Turno: {self.paciente} - {self.fecha} {self.hora} con Dr. {self.odontologo}"
+    
+    def save(self, *args, **kwargs):
+        # Llamar al save original primero
+        super().save(*args, **kwargs)
+        
+        # Programar recordatorio si es un turno nuevo y no se ha programado ya
+        if not self.recordatorio_programado and self.fecha and self.hora:
+            self.programar_recordatorio()
+    
+    def programar_recordatorio(self):
+        """
+        Programa un recordatorio para este turno 1 hora antes
+        """
+        try:
+            from .tasks import enviar_recordatorio_turno
+            
+            # Combinar fecha y hora del turno
+            fecha_hora_turno = datetime.combine(self.fecha, self.hora)
+            
+            # Calcular cuándo enviar el recordatorio (1 hora antes)
+            hora_recordatorio = fecha_hora_turno - timedelta(hours=1)
+            
+            # Solo programar si el recordatorio es en el futuro
+            if hora_recordatorio > datetime.now():
+                # Programar la tarea
+                enviar_recordatorio_turno.apply_async(
+                    args=[self.id],
+                    eta=hora_recordatorio
+                )
+                
+                # Marcar como programado
+                self.recordatorio_programado = True
+                self.save(update_fields=['recordatorio_programado'])
+                
+                print(f"Recordatorio programado para turno {self.id} a las {hora_recordatorio}")
+            else:
+                print(f"No se programó recordatorio para turno {self.id} - hora ya pasó")
+                
+        except Exception as e:
+            print(f"Error programando recordatorio para turno {self.id}: {str(e)}")
     
 class EstadoTratamiento(models.Model):
     nombre = models.CharField(max_length=50, unique=True)

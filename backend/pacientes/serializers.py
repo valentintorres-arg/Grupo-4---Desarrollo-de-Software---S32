@@ -130,10 +130,10 @@ class TratamientoSerializer(serializers.ModelSerializer):
         
     def validate_fecha_inicio(self, value):
         from datetime import date
-        # Solo validar fecha futura en creaciones, no en actualizaciones
-        if not self.instance and value > date.today():
+        # La fecha de inicio puede ser hoy o en el futuro, pero no en el pasado
+        if value < date.today():
             from rest_framework import serializers
-            raise serializers.ValidationError("La fecha de inicio no puede ser futura.")
+            raise serializers.ValidationError("La fecha de inicio no puede ser en el pasado.")
         return value
         
     def validate(self, attrs):

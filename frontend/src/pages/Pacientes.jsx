@@ -350,10 +350,6 @@ export default function PatientDetailPage() {
                       </span>
                     </div>
                     <div style={styles.field}>
-                      <label style={styles.label}>ID del Paciente</label>
-                      <span style={styles.value}>#{patient.id}</span>
-                    </div>
-                    <div style={styles.field}>
                       <label style={styles.label}>DNI</label>
                       <span style={styles.value}>{patient.dni}</span>
                     </div>
