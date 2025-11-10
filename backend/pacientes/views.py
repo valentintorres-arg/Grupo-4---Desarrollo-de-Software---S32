@@ -3,8 +3,8 @@ from rest_framework import viewsets, status, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Paciente, ObraSocial, Antecedente, EntradaAntecedente, Turno, EstadoTratamiento, Tratamiento, OdontogramaDatos, Odontograma
-from .serializers import PacienteSerializer, ObraSocialSerializer, EntradaAntecedenteSerializer, AntecedenteSerializer, TurnoSerializer, EstadoTratamientoSerializer, TratamientoSerializer, OdontogramaDatosSerializer, OdontogramaSerializer
+from .models import Paciente, ObraSocial, Antecedente, EntradaAntecedente, Turno, EstadoTratamiento, Tratamiento, OdontogramaDatos, Odontograma, Evolucion
+from .serializers import PacienteSerializer, ObraSocialSerializer, EntradaAntecedenteSerializer, AntecedenteSerializer, TurnoSerializer, EstadoTratamientoSerializer, TratamientoSerializer, OdontogramaDatosSerializer, OdontogramaSerializer, EvolucionSerializer
 
 class PacienteViewSet(viewsets.ModelViewSet):
     queryset = Paciente.objects.all()
@@ -351,3 +351,17 @@ class OdontogramaDatosViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(fdi=fdi)
             
         return queryset.order_by('fdi', 'superficie')
+    
+
+class EvolucionViewSet(viewsets.ModelViewSet):
+    queryset = Evolucion.objects.all()
+    serializer_class = EvolucionSerializer
+    permission_classes = [IsAuthenticated]
+
+    # Esto permite filtrar por paciente, ej: /api/evoluciones/?paciente=1
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        tratamiento_id = self.request.query_params.get('tratamiento')
+        if tratamiento_id:
+            queryset = queryset.filter(tratamiento_id=tratamiento_id)
+        return queryset.order_by('-fecha')

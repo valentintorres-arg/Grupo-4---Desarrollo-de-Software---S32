@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Paciente, ObraSocial, Antecedente, EntradaAntecedente, Turno, EstadoTratamiento, Tratamiento, Odontograma, OdontogramaDatos
+from .models import Paciente, ObraSocial, Antecedente, EntradaAntecedente, Turno, EstadoTratamiento, Tratamiento, Odontograma, OdontogramaDatos, Evolucion
 
 class ObraSocialSerializer(serializers.ModelSerializer):
     class Meta:
@@ -126,7 +126,7 @@ class TratamientoSerializer(serializers.ModelSerializer):
             'paciente_nombre', 'paciente_apellido', 'paciente_dni', 'estado_nombre',
             'odontologo_nombre', 'odontologo_apellido', 'odontologo_matricula'
         ]
-        read_only_fields = ['created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at', 'odontologo']
         
     def validate_fecha_inicio(self, value):
         from datetime import date
@@ -165,3 +165,9 @@ class OdontogramaSerializer(serializers.ModelSerializer):
             'paciente_nombre', 'paciente_apellido', 'datos'
         ]
         read_only_fields = ['created_at', 'updated_at']
+
+class EvolucionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Evolucion
+        fields = ['id', 'tratamiento', 'fecha', 'descripcion', 'imagen']
+        read_only_fields = ['fecha'] # La fecha se genera sola, no dejamos que React la toque

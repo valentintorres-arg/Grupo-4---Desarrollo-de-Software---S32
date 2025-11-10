@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { tratamientosAPI, estadosTratamientoAPI } from "../../services/api";
 import { formatearFecha } from "../../utils/dateUtils";
+import EvolucionList from "./EvolucionList";
+import EvolucionForm from "./EvolucionForm";
 
 export default function VistaPreviaTratamiento({ pacienteId }) {
   const [tratamientos, setTratamientos] = useState([]);
@@ -8,6 +10,9 @@ export default function VistaPreviaTratamiento({ pacienteId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingTratamiento, setEditingTratamiento] = useState(null);
+  const [expandedTratamientoId, setExpandedTratamientoId] = useState(null);
+  const [evolucionUpdateTrigger, setEvolucionUpdateTrigger] = useState(0);
+  const [editingEvolucion, setEditingEvolucion] = useState(null);
   const [editForm, setEditForm] = useState({
     nombre: "",
     descripcion: "",
@@ -178,6 +183,10 @@ export default function VistaPreviaTratamiento({ pacienteId }) {
   const handleEditFormChange = (e) => {
     const { name, value } = e.target;
     setEditForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const toggleEvoluciones = (tratamientoId) => {
+    setExpandedTratamientoId(prevId => (prevId === tratamientoId ? null : tratamientoId));
   };
 
   const styles = {
@@ -382,6 +391,24 @@ export default function VistaPreviaTratamiento({ pacienteId }) {
       fontSize: "1rem",
       fontStyle: "italic",
     },
+
+    evolucionesSection: {
+      marginTop: '20px',
+      borderTop: '1px solid #e5e7eb',
+      paddingTop: '20px'
+    },
+    evolucionesButton: {
+      backgroundColor: "#6366f1",
+      color: "#fff",
+      marginTop: "15px",
+      width: "100%",
+      padding: "10px",
+      borderRadius: "6px",
+      border: "none",
+      cursor: "pointer",
+      fontWeight: "500"
+    },
+
   };
 
   if (!pacienteId) {
@@ -501,6 +528,31 @@ export default function VistaPreviaTratamiento({ pacienteId }) {
                   <div style={styles.descripcion}>
                     <strong>Descripción:</strong><br />
                     {tratamiento.descripcion}
+                  </div>
+                )}
+               <button
+                  style={styles.evolucionesButton}
+                  onClick={() => toggleEvoluciones(tratamiento.id)}
+                >
+                  {expandedTratamientoId === tratamiento.id ? ' Ocultar Evoluciones' : ' Ver Historial de Evoluciones'}
+                </button>
+
+                {expandedTratamientoId === tratamiento.id && (
+                  <div style={styles.evolucionesSection}>
+                    <EvolucionForm 
+                      tratamientoId={tratamiento.id} 
+                      onEvolucionAgregada={() => {
+                        setEvolucionUpdateTrigger(prev => prev + 1);
+                        setEditingEvolucion(null);
+                      }}
+                      evolucionAEditar={editingEvolucion}
+                      onCancelEdit={() => setEditingEvolucion(null)}
+                    />
+                    <EvolucionList 
+                      tratamientoId={tratamiento.id} 
+                      key={evolucionUpdateTrigger}
+                      onEdit={(evo) => setEditingEvolucion(evo)}
+                    />
                   </div>
                 )}
               </div>

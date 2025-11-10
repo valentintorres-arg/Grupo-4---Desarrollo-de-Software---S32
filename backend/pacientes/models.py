@@ -173,3 +173,18 @@ class OdontogramaDatos(models.Model):
         verbose_name_plural = "Datos de Odontogramas"
         unique_together = ['odontograma', 'fdi', 'superficie']
         ordering = ['fdi', 'superficie']
+
+class Evolucion(models.Model):
+    # CAMBIO: Ahora depende de Tratamiento, no de Paciente
+    tratamiento = models.ForeignKey(Tratamiento, on_delete=models.CASCADE, related_name='evoluciones')
+    fecha = models.DateTimeField(auto_now_add=True)
+    descripcion = models.TextField()
+    imagen = models.ImageField(upload_to='evoluciones/%Y/%m/', null=True, blank=True)
+
+    class Meta:
+        ordering = ['-fecha']
+        verbose_name = "Evolución"
+        verbose_name_plural = "Evoluciones"
+
+    def __str__(self):
+        return f"Evolución de {self.tratamiento} - {self.fecha.strftime('%d/%m/%Y')}"
