@@ -194,6 +194,12 @@ export const odontologosAPI = {
     getById: async (id) => {
         const response = await apiRequest(`/odontologos/odontologos/${id}/`);
         return response.json();
+    },
+
+    getByMatricula: async (matricula) => {
+        const response = await apiRequest(`/odontologos/odontologos/?matricula=${matricula}`);
+        const data = await response.json();
+        return data.length > 0 ? data[0] : null;
     }
 };
 

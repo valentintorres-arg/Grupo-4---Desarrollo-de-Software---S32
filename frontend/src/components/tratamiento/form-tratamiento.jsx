@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { tratamientosAPI, patientsAPI } from "../../services/api";
+import { tratamientosAPI, patientsAPI, odontologosAPI } from "../../services/api";
+import { getUserData } from "../../utils/auth";
 
 export default function FormTratamiento({ onTratamientoCreated, pacienteId = null }) {
   const [formulario, setFormulario] = useState({
@@ -7,8 +8,9 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
     descripcion: "",
     paciente: pacienteId || "",
     estado: 1,
-    fecha_inicio: "",
-    duracion_estimada: ""
+    fecha_inicio: new Date().toISOString().split('T')[0], // Fecha de hoy por defecto
+    duracion_estimada: "",
+    odontologo: ""
   });
 
   const [pacientes, setPacientes] = useState([]);
@@ -21,6 +23,7 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
 
   useEffect(() => {
     loadPacientes();
+    loadCurrentOdontologo();
   }, []);
 
   useEffect(() => {
@@ -50,6 +53,20 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
     } catch (err) {
       console.error("Error al cargar pacientes:", err);
       setError("Error al cargar lista de pacientes");
+    }
+  };
+
+  const loadCurrentOdontologo = async () => {
+    try {
+      const userData = getUserData();
+      if (userData.matricula) {
+        const odontologo = await odontologosAPI.getByMatricula(userData.matricula);
+        if (odontologo) {
+          setFormulario(prev => ({ ...prev, odontologo: odontologo.id }));
+        }
+      }
+    } catch (err) {
+      console.error("Error al cargar odontólogo actual:", err);
     }
   };
 
@@ -90,8 +107,9 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
         descripcion: "",
         paciente: pacienteId || "",
         estado: 1,
-        fecha_inicio: "",
-        duracion_estimada: ""
+        fecha_inicio: new Date().toISOString().split('T')[0], // Mantener fecha de hoy
+        duracion_estimada: "",
+        odontologo: formulario.odontologo
       });
       setSearchDni("");
 
@@ -292,6 +310,12 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
           </div>
         )}
 
+        <input
+          type="hidden"
+          name="odontologo"
+          value={formulario.odontologo}
+        />
+
         <div style={styles.inputGroup}>
           <label style={styles.label}>Fecha de Inicio *</label>
           <input
@@ -300,6 +324,7 @@ export default function FormTratamiento({ onTratamientoCreated, pacienteId = nul
             value={formulario.fecha_inicio}
             onChange={handleInputChange}
             style={styles.input}
+            min={new Date().toISOString().split('T')[0]} // No permitir fechas pasadas
             required
           />
         </div>

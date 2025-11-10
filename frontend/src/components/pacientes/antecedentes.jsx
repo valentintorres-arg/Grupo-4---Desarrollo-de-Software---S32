@@ -8,6 +8,9 @@ export default function Antecedentes({ pacienteId }) {
   const [antecedentes, setAntecedentes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingAntecedente, setEditingAntecedente] = useState(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingAntecedente, setPendingAntecedente] = useState(null);
 
   useEffect(() => {
     const loadAntecedentes = async () => {
@@ -30,13 +33,19 @@ export default function Antecedentes({ pacienteId }) {
     }
   }, [pacienteId]);
 
-  const handleAddAntecedente = async (nuevoAntecedente) => {
+  const handleAddAntecedente = (nuevoAntecedente) => {
+    // Primero mostrar el diálogo de confirmación
+    setPendingAntecedente(nuevoAntecedente);
+    setShowConfirmDialog(true);
+  };
+
+  const confirmAddAntecedente = async () => {
     try {
       // Crear antecedente en el backend
       const antecedenteData = {
         paciente: pacienteId,
-        fecha: nuevoAntecedente.fecha,
-        antecedente: nuevoAntecedente.descripcion
+        fecha: pendingAntecedente.fecha,
+        antecedente: pendingAntecedente.descripcion
       };
       
       const antecedenteCreado = await patientsAPI.antecedentes.create(antecedenteData);
@@ -45,26 +54,56 @@ export default function Antecedentes({ pacienteId }) {
       setAntecedentes(prev => [antecedenteCreado, ...prev]);
       
       console.log('Antecedente creado exitosamente:', antecedenteCreado);
+      
+      // Limpiar estados
+      setShowConfirmDialog(false);
+      setPendingAntecedente(null);
+      setMostrarModal(false);
     } catch (err) {
       console.error('Error al crear antecedente:', err);
       setError('Error al guardar el antecedente: ' + err.message);
+      setShowConfirmDialog(false);
+      setPendingAntecedente(null);
     }
   };
 
-  const handleDeleteAntecedente = async (id) => {
+  const cancelAddAntecedente = () => {
+    setShowConfirmDialog(false);
+    setPendingAntecedente(null);
+  };
+
+  const handleEditAntecedente = (antecedente) => {
+    setEditingAntecedente(antecedente);
+    setMostrarModal(true);
+  };
+
+  const handleUpdateAntecedente = async (antecedenteActualizado) => {
     try {
-      // Eliminar del backend
-      await patientsAPI.antecedentes.delete(id);
+      const antecedenteData = {
+        paciente: pacienteId,
+        fecha: antecedenteActualizado.fecha,
+        antecedente: antecedenteActualizado.descripcion
+      };
+      
+      const antecedenteEditado = await patientsAPI.antecedentes.update(editingAntecedente.id, antecedenteData);
       
       // Actualizar la lista local
-      setAntecedentes(prev => prev.filter(ant => ant.id !== id));
+      setAntecedentes(prev => prev.map(ant => 
+        ant.id === editingAntecedente.id ? antecedenteEditado : ant
+      ));
       
-      console.log('Antecedente eliminado:', id);
+      console.log('Antecedente actualizado exitosamente:', antecedenteEditado);
+      
+      // Limpiar estados
+      setEditingAntecedente(null);
+      setMostrarModal(false);
     } catch (err) {
-      console.error('Error al eliminar antecedente:', err);
-      setError('Error al eliminar el antecedente: ' + err.message);
+      console.error('Error al actualizar antecedente:', err);
+      setError('Error al actualizar el antecedente: ' + err.message);
     }
   };
+
+
 
   const s = {
     grid: {
@@ -107,6 +146,62 @@ export default function Antecedentes({ pacienteId }) {
       fontSize: "12px",
       cursor: "pointer",
       transition: "all 0.2s ease",
+    },
+    editButton: {
+      position: "absolute",
+      top: 10,
+      right: 10,
+      backgroundColor: "#3b82f6",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      padding: "4px 8px",
+      fontSize: "12px",
+      cursor: "pointer",
+      transition: "all 0.2s ease",
+    },
+    confirmDialog: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 1000,
+    },
+    confirmContent: {
+      backgroundColor: "#fff",
+      borderRadius: "12px",
+      padding: "24px",
+      maxWidth: "400px",
+      width: "90%",
+      textAlign: "center",
+      boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
+    },
+    confirmButtons: {
+      display: "flex",
+      gap: "12px",
+      justifyContent: "center",
+      marginTop: "20px",
+    },
+    confirmButton: {
+      padding: "10px 20px",
+      borderRadius: "6px",
+      border: "none",
+      cursor: "pointer",
+      fontWeight: "600",
+      transition: "all 0.2s ease",
+    },
+    confirmButtonYes: {
+      backgroundColor: "#10b981",
+      color: "#fff",
+    },
+    confirmButtonNo: {
+      backgroundColor: "#ef4444",
+      color: "#fff",
     },
     loading: {
       textAlign: "center",
@@ -152,13 +247,13 @@ export default function Antecedentes({ pacienteId }) {
           antecedentes.map((a) => (
             <div key={a.id} style={s.card}>
               <button
-                style={s.deleteButton}
-                onClick={() => handleDeleteAntecedente(a.id)}
-                onMouseEnter={(e) => e.target.style.backgroundColor = "#dc2626"}
-                onMouseLeave={(e) => e.target.style.backgroundColor = "#ef4444"}
-                title="Eliminar antecedente"
+                style={s.editButton}
+                onClick={() => handleEditAntecedente(a)}
+                onMouseEnter={(e) => e.target.style.backgroundColor = "#2563eb"}
+                onMouseLeave={(e) => e.target.style.backgroundColor = "#3b82f6"}
+                title="Modificar antecedente"
               >
-                ✕
+                ✏️
               </button>
               <p style={{ fontSize: 14, color: "#64748b", fontWeight: 500 }}>
                 📅 {formatearFecha(a.fecha)}
@@ -185,9 +280,49 @@ export default function Antecedentes({ pacienteId }) {
       {/* Modal para agregar nuevo antecedente */}
       <ModalAgregarAntecedente
         isOpen={mostrarModal}
-        onClose={() => setMostrarModal(false)}
-        onAdd={handleAddAntecedente}
+        onClose={() => {
+          setMostrarModal(false);
+          setEditingAntecedente(null);
+        }}
+        onAdd={editingAntecedente ? handleUpdateAntecedente : handleAddAntecedente}
+        initialData={editingAntecedente ? {
+          fecha: editingAntecedente.fecha,
+          descripcion: editingAntecedente.antecedente
+        } : null}
+        isEditing={!!editingAntecedente}
       />
+
+      {/* Diálogo de confirmación */}
+      {showConfirmDialog && (
+        <div style={s.confirmDialog}>
+          <div style={s.confirmContent}>
+            <h3 style={{ margin: "0 0 16px 0", color: "#111827" }}>
+              ¿Está seguro que desea crear este antecedente?
+            </h3>
+            <p style={{ margin: "0 0 20px 0", color: "#6b7280" }}>
+              Esta acción agregará un nuevo antecedente médico al historial del paciente.
+            </p>
+            <div style={s.confirmButtons}>
+              <button
+                style={{ ...s.confirmButton, ...s.confirmButtonYes }}
+                onClick={confirmAddAntecedente}
+                onMouseEnter={(e) => e.target.style.backgroundColor = "#059669"}
+                onMouseLeave={(e) => e.target.style.backgroundColor = "#10b981"}
+              >
+                Sí, crear
+              </button>
+              <button
+                style={{ ...s.confirmButton, ...s.confirmButtonNo }}
+                onClick={cancelAddAntecedente}
+                onMouseEnter={(e) => e.target.style.backgroundColor = "#dc2626"}
+                onMouseLeave={(e) => e.target.style.backgroundColor = "#ef4444"}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

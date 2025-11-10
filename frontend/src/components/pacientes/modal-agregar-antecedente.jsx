@@ -12,24 +12,42 @@ import React, { useEffect, useState } from "react";
  * <ModalAgregarAntecedente isOpen={open} onClose={() => setOpen(false)} onAdd={(item)=>console.log(item)} />
  */
 
-export default function ModalAgregarAntecedente({ isOpen, onClose, onAdd }) {
+export default function ModalAgregarAntecedente({ isOpen, onClose, onAdd, initialData, isEditing }) {
     const [fecha, setFecha] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (isOpen) {
-            setFecha("");
-            setDescripcion("");
+            if (initialData) {
+                // Modo edición: cargar datos existentes
+                setFecha(initialData.fecha || "");
+                setDescripcion(initialData.descripcion || "");
+            } else {
+                // Modo creación: limpiar campos
+                setFecha("");
+                setDescripcion("");
+            }
             setErrors({});
         }
-    }, [isOpen]);
+    }, [isOpen, initialData]);
 
     if (!isOpen) return null;
 
     const validate = () => {
         const e = {};
-        if (!fecha) e.fecha = "La fecha es obligatoria.";
+        if (!fecha) {
+            e.fecha = "La fecha es obligatoria.";
+        } else {
+            // Validar que la fecha no sea futura
+            const fechaSeleccionada = new Date(fecha);
+            const hoy = new Date();
+            hoy.setHours(23, 59, 59, 999); // Permitir hasta el final del día de hoy
+            
+            if (fechaSeleccionada > hoy) {
+                e.fecha = "No se pueden agregar antecedentes con fechas futuras.";
+            }
+        }
         if (!descripcion.trim()) e.descripcion = "La descripción es obligatoria.";
         return e;
     };
@@ -77,9 +95,9 @@ export default function ModalAgregarAntecedente({ isOpen, onClose, onAdd }) {
     const errorStyle = { color: "#b00020", fontSize: 12, marginTop: 6 };
 
     return (
-        <div style={overlayStyle} role="dialog" aria-modal="true" aria-label="Agregar antecedente">
+        <div style={overlayStyle} role="dialog" aria-modal="true" aria-label={isEditing ? "Modificar antecedente" : "Agregar antecedente"}>
             <div style={modalStyle}>
-                <h3 style={{ margin: 0 }}>Agregar antecedente</h3>
+                <h3 style={{ margin: 0 }}>{isEditing ? "Modificar antecedente" : "Agregar antecedente"}</h3>
 
                 <form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
                     <label style={labelStyle}>
@@ -90,6 +108,7 @@ export default function ModalAgregarAntecedente({ isOpen, onClose, onAdd }) {
                             onChange={(e) => setFecha(e.target.value)}
                             style={inputStyle}
                             aria-invalid={!!errors.fecha}
+                            max={new Date().toISOString().split('T')[0]}
                         />
                     </label>
                     {errors.fecha && <div style={errorStyle}>{errors.fecha}</div>}
@@ -124,7 +143,7 @@ export default function ModalAgregarAntecedente({ isOpen, onClose, onAdd }) {
                                 border: "none",
                             }}
                         >
-                            Guardar
+                            {isEditing ? "Actualizar" : "Guardar"}
                         </button>
                     </div>
                 </form>
