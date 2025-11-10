@@ -1,6 +1,6 @@
 ODONTOLETO
 Descripción general
-OdontoLeto es una plataforma web desarrollada por el Grupo 4 para la materia Desarrollo de Software (comosion S32).
+OdontoLeto es una plataforma web desarrollada por el Grupo 4 para la materia Desarrollo de Software (comosión S32).
 El sistema está orientado a odontólogos y ortodoncistas, permitiendo gestionar pacientes, tratamientos y la evolución clínica a través de imágenes y registros cronológicos.
 
 La aplicación busca optimizar la comunicación y el seguimiento entre el profesional y sus pacientes, mejorando la organización de turnos y el control de los tratamientos realizados.
